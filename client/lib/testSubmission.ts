@@ -1,9 +1,9 @@
 // This is a test utility to verify the application works end-to-end
 // Run this in the browser console to create test data
 
-import { dataStore } from './dataStore';
-import { generateSubmissionId } from '@shared/gameConfig';
-import type { Submission } from '@shared/gameConfig';
+import { dataStore } from "./dataStore";
+import { generateSubmissionId } from "@shared/gameConfig";
+import type { Submission } from "@shared/gameConfig";
 
 export function createTestSubmissions() {
   try {
@@ -15,7 +15,7 @@ export function createTestSubmissions() {
         difficulty: 4,
       },
       {
-        teamName: "Beta Breakers", 
+        teamName: "Beta Breakers",
         level: 1,
         difficulty: 2,
       },
@@ -28,7 +28,7 @@ export function createTestSubmissions() {
         teamName: "Delta Defenders",
         level: 2,
         difficulty: 3,
-      }
+      },
     ];
 
     testSubmissions.forEach((sub, index) => {
@@ -37,7 +37,7 @@ export function createTestSubmissions() {
         teamName: sub.teamName!,
         level: sub.level!,
         difficulty: sub.difficulty!,
-        timestamp: Date.now() - (index * 60000), // Stagger timestamps
+        timestamp: Date.now() - index * 60000, // Stagger timestamps
         completedLevels: Array.from({ length: sub.level! }, (_, i) => i + 1),
       };
 
@@ -45,16 +45,18 @@ export function createTestSubmissions() {
         dataStore.addSubmission(submission);
         console.log(`✅ Added test submission for ${submission.teamName}`);
       } catch (error) {
-        console.error(`❌ Failed to add submission for ${submission.teamName}:`, error);
+        console.error(
+          `❌ Failed to add submission for ${submission.teamName}:`,
+          error,
+        );
       }
     });
 
-    console.log('✨ Test submissions created successfully!');
-    console.log('📊 Current submissions:', dataStore.getSubmissions());
-    console.log('🏆 Current leaderboard:', dataStore.getLeaderboard());
-    
+    console.log("✨ Test submissions created successfully!");
+    console.log("📊 Current submissions:", dataStore.getSubmissions());
+    console.log("🏆 Current leaderboard:", dataStore.getLeaderboard());
   } catch (error) {
-    console.error('❌ Error creating test submissions:', error);
+    console.error("❌ Error creating test submissions:", error);
   }
 }
 
@@ -68,4 +70,6 @@ export function createTestSubmissions() {
   clearData: () => dataStore.clearAllData(),
 };
 
-console.log('🧪 Test utilities loaded. Use window.createTestSubmissions() to create test data.');
+console.log(
+  "🧪 Test utilities loaded. Use window.createTestSubmissions() to create test data.",
+);

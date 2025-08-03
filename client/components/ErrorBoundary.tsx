@@ -1,6 +1,12 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 
@@ -14,7 +20,10 @@ interface ErrorBoundaryProps {
   fallback?: React.ComponentType<{ error?: Error; retry: () => void }>;
 }
 
-export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
@@ -25,8 +34,8 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
+
     // In a production app, you might want to log this to an error reporting service
     // For now, we'll just store it in localStorage for debugging
     try {
@@ -36,15 +45,17 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
         componentStack: errorInfo.componentStack,
         timestamp: Date.now(),
       };
-      
-      const existingLogs = JSON.parse(localStorage.getItem('treasure_shell_errors') || '[]');
+
+      const existingLogs = JSON.parse(
+        localStorage.getItem("treasure_shell_errors") || "[]",
+      );
       existingLogs.push(errorLog);
-      
+
       // Keep only the last 10 errors
       const recentLogs = existingLogs.slice(-10);
-      localStorage.setItem('treasure_shell_errors', JSON.stringify(recentLogs));
+      localStorage.setItem("treasure_shell_errors", JSON.stringify(recentLogs));
     } catch (e) {
-      console.error('Failed to log error:', e);
+      console.error("Failed to log error:", e);
     }
   }
 
@@ -56,10 +67,14 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     if (this.state.hasError) {
       if (this.props.fallback) {
         const FallbackComponent = this.props.fallback;
-        return <FallbackComponent error={this.state.error} retry={this.retry} />;
+        return (
+          <FallbackComponent error={this.state.error} retry={this.retry} />
+        );
       }
 
-      return <DefaultErrorFallback error={this.state.error} retry={this.retry} />;
+      return (
+        <DefaultErrorFallback error={this.state.error} retry={this.retry} />
+      );
     }
 
     return this.props.children;
@@ -71,9 +86,12 @@ interface ErrorFallbackProps {
   retry: () => void;
 }
 
-export const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({ error, retry }) => {
+export const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
+  error,
+  retry,
+}) => {
   const goHome = () => {
-    window.location.href = '/';
+    window.location.href = "/";
   };
 
   return (
@@ -85,26 +103,24 @@ export const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({ error, retr
             System Error Detected
           </CardTitle>
           <CardDescription>
-            Something went wrong in the terminal. This error has been logged for analysis.
+            Something went wrong in the terminal. This error has been logged for
+            analysis.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Alert className="border-cyber-red/50 bg-cyber-red/10">
             <AlertTriangle className="w-4 h-4" />
             <AlertDescription className="text-cyber-red">
-              {error?.message || 'An unexpected error occurred'}
+              {error?.message || "An unexpected error occurred"}
             </AlertDescription>
           </Alert>
 
           <div className="space-y-2">
-            <Button
-              onClick={retry}
-              className="w-full glow-border matrix-text"
-            >
+            <Button onClick={retry} className="w-full glow-border matrix-text">
               <RefreshCw className="w-4 h-4 mr-2" />
               Retry Operation
             </Button>
-            
+
             <Button
               onClick={goHome}
               variant="outline"

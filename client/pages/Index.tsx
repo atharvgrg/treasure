@@ -3,12 +3,32 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { validatePassword, generateSubmissionId, getCompletedLevels, type Submission } from "@shared/gameConfig";
+import {
+  validatePassword,
+  generateSubmissionId,
+  getCompletedLevels,
+  type Submission,
+} from "@shared/gameConfig";
 import { dataStore } from "@/lib/dataStore";
-import { Terminal, Star, Shield, Users, AlertTriangle, CheckCircle, Cpu, Lock } from "lucide-react";
+import {
+  Terminal,
+  Star,
+  Shield,
+  Users,
+  AlertTriangle,
+  CheckCircle,
+  Cpu,
+  Lock,
+} from "lucide-react";
 
 export default function Index() {
   const [teamName, setTeamName] = useState("");
@@ -46,7 +66,9 @@ export default function Index() {
       }
 
       if (!/^[a-zA-Z0-9\s\-_]+$/.test(teamName.trim())) {
-        throw new Error("Team name can only contain letters, numbers, spaces, hyphens, and underscores");
+        throw new Error(
+          "Team name can only contain letters, numbers, spaces, hyphens, and underscores",
+        );
       }
 
       if (!password.trim()) {
@@ -60,7 +82,9 @@ export default function Index() {
       // Validate password and get level
       const level = validatePassword(password.trim());
       if (!level) {
-        throw new Error("Invalid password. Double-check the password from your completed level.");
+        throw new Error(
+          "Invalid password. Double-check the password from your completed level.",
+        );
       }
 
       // Create submission
@@ -76,7 +100,9 @@ export default function Index() {
       // Save to data store
       dataStore.addSubmission(submission);
 
-      setSuccess(`Success! ${level.name} completed. ${level.level === 10 ? 'TREASURE FOUND! 🏆' : 'Keep going!'}`);
+      setSuccess(
+        `Success! ${level.name} completed. ${level.level === 10 ? "TREASURE FOUND! 🏆" : "Keep going!"}`,
+      );
       setTeamName("");
       setPassword("");
       setDifficulty(1);
@@ -120,7 +146,7 @@ export default function Index() {
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-cyber-green/10 via-transparent to-cyber-blue/10" />
         <div className="absolute inset-0 bg-gradient-to-t from-terminal-bg/50 to-transparent" />
-        
+
         <div className="container mx-auto px-4 py-12 relative">
           <div className="text-center mb-12">
             {/* Logo/Icon Section */}
@@ -138,9 +164,11 @@ export default function Index() {
 
             {/* Main Title */}
             <div className="relative mb-8">
-              <h1 className={`text-5xl md:text-7xl lg:text-8xl font-bold text-cyber-green mb-6 ${
-                !isTypingComplete ? 'typing-animation' : 'glow-text'
-              }`}>
+              <h1
+                className={`text-5xl md:text-7xl lg:text-8xl font-bold text-cyber-green mb-6 ${
+                  !isTypingComplete ? "typing-animation" : "glow-text"
+                }`}
+              >
                 TREASURE IN THE SHELL
               </h1>
               <div className="absolute -inset-1 bg-gradient-to-r from-cyber-green via-cyber-blue to-cyber-purple opacity-20 blur-xl rounded-lg"></div>
@@ -158,15 +186,24 @@ export default function Index() {
 
             {/* Event Details */}
             <div className="flex flex-wrap justify-center gap-6 mb-8">
-              <Badge variant="outline" className="glow-border text-cyber-green px-4 py-2 text-lg bg-cyber-green/10 hover:bg-cyber-green/20 transition-colors">
+              <Badge
+                variant="outline"
+                className="glow-border text-cyber-green px-4 py-2 text-lg bg-cyber-green/10 hover:bg-cyber-green/20 transition-colors"
+              >
                 <span className="text-2xl mr-2">🕐</span>
                 02:00 PM
               </Badge>
-              <Badge variant="outline" className="glow-border text-cyber-blue px-4 py-2 text-lg bg-cyber-blue/10 hover:bg-cyber-blue/20 transition-colors">
+              <Badge
+                variant="outline"
+                className="glow-border text-cyber-blue px-4 py-2 text-lg bg-cyber-blue/10 hover:bg-cyber-blue/20 transition-colors"
+              >
                 <span className="text-2xl mr-2">📅</span>
                 06 August 2025
               </Badge>
-              <Badge variant="outline" className="glow-border text-cyber-purple px-4 py-2 text-lg bg-cyber-purple/10 hover:bg-cyber-purple/20 transition-colors">
+              <Badge
+                variant="outline"
+                className="glow-border text-cyber-purple px-4 py-2 text-lg bg-cyber-purple/10 hover:bg-cyber-purple/20 transition-colors"
+              >
                 <span className="text-2xl mr-2">📍</span>
                 301 M Block
               </Badge>
@@ -181,7 +218,7 @@ export default function Index() {
           <div className="relative">
             {/* Glowing background effect */}
             <div className="absolute -inset-4 bg-gradient-to-r from-cyber-green/20 via-cyber-blue/20 to-cyber-purple/20 rounded-3xl blur-2xl animate-pulse"></div>
-            
+
             <Card className="relative glow-border bg-card/95 backdrop-blur-xl border-2 border-cyber-green/30 shadow-2xl shadow-cyber-green/20">
               <CardHeader className="text-center pb-8">
                 <div className="flex items-center justify-center gap-3 mb-4">
@@ -194,7 +231,7 @@ export default function Index() {
                     [SUBMIT_PROGRESS]
                   </div>
                 </div>
-                
+
                 <CardTitle className="text-3xl text-cyber-green matrix-text glow-text mb-2">
                   Submit Your Progress
                 </CardTitle>
@@ -202,7 +239,7 @@ export default function Index() {
                   Enter your team name and level password to track your progress
                 </CardDescription>
               </CardHeader>
-              
+
               <CardContent className="px-8 pb-8">
                 {error && (
                   <Alert className="mb-6 border-destructive/50 bg-destructive/10 border-2">
@@ -224,7 +261,10 @@ export default function Index() {
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                   <div className="space-y-3">
-                    <Label htmlFor="teamName" className="text-foreground matrix-text text-lg flex items-center gap-2">
+                    <Label
+                      htmlFor="teamName"
+                      className="text-foreground matrix-text text-lg flex items-center gap-2"
+                    >
                       <Cpu className="w-5 h-5 text-cyber-blue" />
                       Team Name
                     </Label>
@@ -239,7 +279,10 @@ export default function Index() {
                   </div>
 
                   <div className="space-y-3">
-                    <Label htmlFor="password" className="text-foreground matrix-text text-lg flex items-center gap-2">
+                    <Label
+                      htmlFor="password"
+                      className="text-foreground matrix-text text-lg flex items-center gap-2"
+                    >
                       <Lock className="w-5 h-5 text-cyber-green" />
                       Level Password
                     </Label>
@@ -286,7 +329,7 @@ export default function Index() {
                 <div className="mt-8 pt-6 border-t border-border">
                   <Button
                     variant="outline"
-                    onClick={() => navigate('/admin')}
+                    onClick={() => navigate("/admin")}
                     className="w-full glow-border matrix-text border-2 border-cyber-blue/30 hover:border-cyber-blue hover:bg-cyber-blue/10 transition-all"
                   >
                     <Shield className="w-4 h-4 mr-2" />
@@ -306,8 +349,9 @@ export default function Index() {
                   💡 How It Works
                 </h3>
                 <p className="text-sm text-muted-foreground matrix-text leading-relaxed">
-                  Levels are sequential - completing Level 4 means you've also completed Levels 1-3.
-                  Each password unlocks a specific level and tracks your team's progress in real-time.
+                  Levels are sequential - completing Level 4 means you've also
+                  completed Levels 1-3. Each password unlocks a specific level
+                  and tracks your team's progress in real-time.
                 </p>
               </div>
             </CardContent>

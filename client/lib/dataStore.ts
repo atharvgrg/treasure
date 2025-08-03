@@ -45,7 +45,7 @@ class DataStore {
   }
 
   private notifyListeners(): void {
-    this.listeners.forEach(callback => callback());
+    this.listeners.forEach((callback) => callback());
   }
 
   addSubmission(submission: Submission): void {
@@ -58,11 +58,19 @@ class DataStore {
       throw new Error("Team name must be 50 characters or less");
     }
 
-    if (!Number.isInteger(submission.level) || submission.level < 1 || submission.level > 10) {
+    if (
+      !Number.isInteger(submission.level) ||
+      submission.level < 1 ||
+      submission.level > 10
+    ) {
       throw new Error("Invalid level number");
     }
 
-    if (!Number.isInteger(submission.difficulty) || submission.difficulty < 1 || submission.difficulty > 5) {
+    if (
+      !Number.isInteger(submission.difficulty) ||
+      submission.difficulty < 1 ||
+      submission.difficulty > 5
+    ) {
       throw new Error("Difficulty must be between 1 and 5 stars");
     }
 
@@ -73,21 +81,27 @@ class DataStore {
     const data = this.getStorageData();
 
     // Check for duplicate submission ID
-    if (data.submissions.find(s => s.id === submission.id)) {
+    if (data.submissions.find((s) => s.id === submission.id)) {
       throw new Error("Duplicate submission ID");
     }
 
     // Check for duplicate team submissions for the same level
     const existingSubmission = data.submissions.find(
-      s => s.teamName.toLowerCase() === submission.teamName.toLowerCase() && s.level === submission.level
+      (s) =>
+        s.teamName.toLowerCase() === submission.teamName.toLowerCase() &&
+        s.level === submission.level,
     );
 
     if (existingSubmission) {
-      throw new Error(`Team "${submission.teamName}" has already submitted for Level ${submission.level}`);
+      throw new Error(
+        `Team "${submission.teamName}" has already submitted for Level ${submission.level}`,
+      );
     }
 
     // Validate team name doesn't contain inappropriate characters
-    const sanitizedTeamName = submission.teamName.trim().replace(/[<>\"'&]/g, '');
+    const sanitizedTeamName = submission.teamName
+      .trim()
+      .replace(/[<>\"'&]/g, "");
     if (sanitizedTeamName.length !== submission.teamName.trim().length) {
       throw new Error("Team name contains invalid characters");
     }
@@ -100,7 +114,9 @@ class DataStore {
     };
 
     data.submissions.push(cleanSubmission);
-    data.submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp);
+    data.submissions.sort(
+      (a, b) => b.level - a.level || a.timestamp - b.timestamp,
+    );
     this.saveStorageData(data);
   }
 
@@ -109,37 +125,54 @@ class DataStore {
   }
 
   getSubmissionsByLevel(level: number): Submission[] {
-    return this.getSubmissions().filter(s => s.level === level);
+    return this.getSubmissions().filter((s) => s.level === level);
   }
 
   getTeamSubmissions(teamName: string): Submission[] {
     return this.getSubmissions().filter(
-      s => s.teamName.toLowerCase() === teamName.toLowerCase()
+      (s) => s.teamName.toLowerCase() === teamName.toLowerCase(),
     );
   }
 
-  getLeaderboard(): { teamName: string; highestLevel: number; totalSubmissions: number; lastActivity: number }[] {
-    const teams = new Map<string, { highestLevel: number; totalSubmissions: number; lastActivity: number }>();
-    
-    this.getSubmissions().forEach(submission => {
+  getLeaderboard(): {
+    teamName: string;
+    highestLevel: number;
+    totalSubmissions: number;
+    lastActivity: number;
+  }[] {
+    const teams = new Map<
+      string,
+      { highestLevel: number; totalSubmissions: number; lastActivity: number }
+    >();
+
+    this.getSubmissions().forEach((submission) => {
       const teamKey = submission.teamName.toLowerCase();
       const existing = teams.get(teamKey);
-      
+
       if (!existing || submission.level > existing.highestLevel) {
         teams.set(teamKey, {
           highestLevel: submission.level,
           totalSubmissions: (existing?.totalSubmissions || 0) + 1,
-          lastActivity: Math.max(existing?.lastActivity || 0, submission.timestamp),
+          lastActivity: Math.max(
+            existing?.lastActivity || 0,
+            submission.timestamp,
+          ),
         });
       } else {
         existing.totalSubmissions += 1;
-        existing.lastActivity = Math.max(existing.lastActivity, submission.timestamp);
+        existing.lastActivity = Math.max(
+          existing.lastActivity,
+          submission.timestamp,
+        );
       }
     });
-    
+
     return Array.from(teams.entries())
       .map(([teamName, data]) => ({ teamName, ...data }))
-      .sort((a, b) => b.highestLevel - a.highestLevel || b.lastActivity - a.lastActivity);
+      .sort(
+        (a, b) =>
+          b.highestLevel - a.highestLevel || b.lastActivity - a.lastActivity,
+      );
   }
 
   subscribe(callback: () => void): () => void {

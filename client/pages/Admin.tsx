@@ -3,12 +3,32 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { dataStore } from "@/lib/dataStore";
 import { LEVELS, type Submission } from "@shared/gameConfig";
 import {
@@ -24,7 +44,7 @@ import {
   BarChart3,
   Shield,
   Lock,
-  AlertTriangle
+  AlertTriangle,
 } from "lucide-react";
 
 export default function Admin() {
@@ -44,13 +64,13 @@ export default function Admin() {
 
   useEffect(() => {
     refreshData();
-    
+
     // Set up real-time updates
     const unsubscribe = dataStore.subscribe(refreshData);
-    
+
     // Auto-refresh every 5 seconds
     const interval = setInterval(refreshData, 5000);
-    
+
     return () => {
       unsubscribe();
       clearInterval(interval);
@@ -66,16 +86,16 @@ export default function Admin() {
   };
 
   const getLevelName = (level: number) => {
-    return LEVELS.find(l => l.level === level)?.name || `Level ${level}`;
+    return LEVELS.find((l) => l.level === level)?.name || `Level ${level}`;
   };
 
   const exportData = () => {
     const data = dataStore.exportData();
-    const blob = new Blob([data], { type: 'application/json' });
+    const blob = new Blob([data], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `treasure-shell-data-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `treasure-shell-data-${new Date().toISOString().split("T")[0]}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -83,7 +103,11 @@ export default function Admin() {
   };
 
   const clearData = () => {
-    if (window.confirm('Are you sure you want to clear all data? This cannot be undone!')) {
+    if (
+      window.confirm(
+        "Are you sure you want to clear all data? This cannot be undone!",
+      )
+    ) {
       dataStore.clearAllData();
     }
   };
@@ -104,9 +128,9 @@ export default function Admin() {
 
   const getStars = (difficulty: number) => {
     return Array.from({ length: 5 }, (_, i) => (
-      <Star 
-        key={i} 
-        className={`w-4 h-4 ${i < difficulty ? 'text-cyber-green fill-current' : 'text-muted-foreground'}`} 
+      <Star
+        key={i}
+        className={`w-4 h-4 ${i < difficulty ? "text-cyber-green fill-current" : "text-muted-foreground"}`}
       />
     ));
   };
@@ -136,12 +160,12 @@ export default function Admin() {
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigate('/')}
+                onClick={() => navigate("/")}
                 className="glow-border matrix-text"
               >
                 <Home className="w-4 h-4 mr-2" />
@@ -158,7 +182,7 @@ export default function Admin() {
               </Button>
             </div>
           </div>
-          
+
           <div className="mt-4 flex flex-wrap gap-4">
             <Badge variant="outline" className="glow-border text-cyber-green">
               <Users className="w-4 h-4 mr-1" />
@@ -201,28 +225,40 @@ export default function Admin() {
           <TabsContent value="leaderboard">
             <Card className="glow-border bg-card/90 backdrop-blur">
               <CardHeader>
-                <CardTitle className="text-cyber-green matrix-text">🏆 Team Leaderboard</CardTitle>
-                <CardDescription>Teams ranked by highest level completed</CardDescription>
+                <CardTitle className="text-cyber-green matrix-text">
+                  🏆 Team Leaderboard
+                </CardTitle>
+                <CardDescription>
+                  Teams ranked by highest level completed
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 {leaderboard.length === 0 ? (
                   <Alert>
-                    <AlertDescription>No submissions yet. Teams will appear here once they start submitting passwords.</AlertDescription>
+                    <AlertDescription>
+                      No submissions yet. Teams will appear here once they start
+                      submitting passwords.
+                    </AlertDescription>
                   </Alert>
                 ) : (
                   <div className="space-y-3">
                     {leaderboard.map((team, index) => (
-                      <div 
+                      <div
                         key={team.teamName}
                         className="flex items-center justify-between p-4 rounded-lg border glow-border bg-card/50"
                       >
                         <div className="flex items-center gap-4">
-                          <div className={`text-2xl font-bold ${
-                            index === 0 ? 'text-cyber-green' :
-                            index === 1 ? 'text-cyber-blue' :
-                            index === 2 ? 'text-cyber-purple' :
-                            'text-foreground'
-                          }`}>
+                          <div
+                            className={`text-2xl font-bold ${
+                              index === 0
+                                ? "text-cyber-green"
+                                : index === 1
+                                  ? "text-cyber-blue"
+                                  : index === 2
+                                    ? "text-cyber-purple"
+                                    : "text-foreground"
+                            }`}
+                          >
                             #{index + 1}
                           </div>
                           <div>
@@ -230,13 +266,16 @@ export default function Admin() {
                               {team.teamName}
                             </div>
                             <div className="text-sm text-muted-foreground">
-                              {team.totalSubmissions} submission{team.totalSubmissions !== 1 ? 's' : ''}
+                              {team.totalSubmissions} submission
+                              {team.totalSubmissions !== 1 ? "s" : ""}
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="text-right">
-                          <div className={`text-xl font-bold ${getLevelColor(team.highestLevel)}`}>
+                          <div
+                            className={`text-xl font-bold ${getLevelColor(team.highestLevel)}`}
+                          >
                             Level {team.highestLevel}
                           </div>
                           <div className="text-sm text-muted-foreground">
@@ -254,13 +293,18 @@ export default function Admin() {
           <TabsContent value="submissions">
             <Card className="glow-border bg-card/90 backdrop-blur">
               <CardHeader>
-                <CardTitle className="text-cyber-green matrix-text">📊 All Submissions</CardTitle>
+                <CardTitle className="text-cyber-green matrix-text">
+                  📊 All Submissions
+                </CardTitle>
                 <CardDescription>Real-time submission feed</CardDescription>
               </CardHeader>
               <CardContent>
                 {submissions.length === 0 ? (
                   <Alert>
-                    <AlertDescription>No submissions yet. This will update automatically as teams submit passwords.</AlertDescription>
+                    <AlertDescription>
+                      No submissions yet. This will update automatically as
+                      teams submit passwords.
+                    </AlertDescription>
                   </Alert>
                 ) : (
                   <Table>
@@ -268,7 +312,9 @@ export default function Admin() {
                       <TableRow>
                         <TableHead className="matrix-text">Team</TableHead>
                         <TableHead className="matrix-text">Level</TableHead>
-                        <TableHead className="matrix-text">Difficulty</TableHead>
+                        <TableHead className="matrix-text">
+                          Difficulty
+                        </TableHead>
                         <TableHead className="matrix-text">Time</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -279,7 +325,9 @@ export default function Admin() {
                             {submission.teamName}
                           </TableCell>
                           <TableCell>
-                            <Badge className={`${getLevelColor(submission.level)} border-current`}>
+                            <Badge
+                              className={`${getLevelColor(submission.level)} border-current`}
+                            >
                               Level {submission.level}
                             </Badge>
                           </TableCell>
@@ -303,27 +351,36 @@ export default function Admin() {
           <TabsContent value="levels">
             <div className="grid gap-4">
               {LEVELS.map((level) => {
-                const levelSubmissions = submissions.filter(s => s.level === level.level);
+                const levelSubmissions = submissions.filter(
+                  (s) => s.level === level.level,
+                );
                 return (
-                  <Card key={level.level} className="glow-border bg-card/90 backdrop-blur">
+                  <Card
+                    key={level.level}
+                    className="glow-border bg-card/90 backdrop-blur"
+                  >
                     <CardHeader>
-                      <CardTitle className={`${getLevelColor(level.level)} matrix-text`}>
+                      <CardTitle
+                        className={`${getLevelColor(level.level)} matrix-text`}
+                      >
                         {level.name}
                       </CardTitle>
                       <CardDescription>
-                        {levelSubmissions.length} team{levelSubmissions.length !== 1 ? 's' : ''} completed
+                        {levelSubmissions.length} team
+                        {levelSubmissions.length !== 1 ? "s" : ""} completed
                       </CardDescription>
                     </CardHeader>
                     {levelSubmissions.length > 0 && (
                       <CardContent>
                         <div className="flex flex-wrap gap-2">
                           {levelSubmissions.map((submission) => (
-                            <Badge 
+                            <Badge
                               key={submission.id}
-                              variant="outline" 
+                              variant="outline"
                               className="glow-border matrix-text"
                             >
-                              {submission.teamName} - {formatTime(submission.timestamp)}
+                              {submission.teamName} -{" "}
+                              {formatTime(submission.timestamp)}
                             </Badge>
                           ))}
                         </div>
@@ -342,7 +399,9 @@ export default function Admin() {
                   <Lock className="w-6 h-6" />
                   ⚠️ Admin Tools
                 </CardTitle>
-                <CardDescription>Use these tools carefully. All actions are permanent.</CardDescription>
+                <CardDescription>
+                  Use these tools carefully. All actions are permanent.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid gap-4 md:grid-cols-2">
@@ -355,7 +414,10 @@ export default function Admin() {
                     Export All Data
                   </Button>
 
-                  <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+                  <Dialog
+                    open={isResetDialogOpen}
+                    onOpenChange={setIsResetDialogOpen}
+                  >
                     <DialogTrigger asChild>
                       <Button
                         className="glow-border matrix-text border-cyber-red text-cyber-red hover:bg-cyber-red/20 bg-cyber-red/10"
@@ -372,7 +434,8 @@ export default function Admin() {
                           🔐 Secure Database Reset
                         </DialogTitle>
                         <DialogDescription className="text-muted-foreground matrix-text">
-                          This will permanently delete all submission data. Enter the admin password to continue.
+                          This will permanently delete all submission data.
+                          Enter the admin password to continue.
                         </DialogDescription>
                       </DialogHeader>
 
@@ -387,7 +450,10 @@ export default function Admin() {
                         )}
 
                         <div className="space-y-2">
-                          <Label htmlFor="resetPassword" className="text-foreground matrix-text">
+                          <Label
+                            htmlFor="resetPassword"
+                            className="text-foreground matrix-text"
+                          >
                             Admin Password
                           </Label>
                           <Input
@@ -397,7 +463,9 @@ export default function Admin() {
                             onChange={(e) => setResetPassword(e.target.value)}
                             placeholder="Enter admin password"
                             className="glow-border matrix-text bg-input/50 border-cyber-red/30"
-                            onKeyDown={(e) => e.key === 'Enter' && handleSecureReset()}
+                            onKeyDown={(e) =>
+                              e.key === "Enter" && handleSecureReset()
+                            }
                           />
                         </div>
 
@@ -429,14 +497,17 @@ export default function Admin() {
                 <Alert className="border-cyber-blue/50 bg-cyber-blue/10">
                   <Monitor className="w-4 h-4" />
                   <AlertDescription className="text-cyber-blue matrix-text">
-                    This panel updates automatically every 5 seconds. Keep this open on the projector for live updates during the event.
+                    This panel updates automatically every 5 seconds. Keep this
+                    open on the projector for live updates during the event.
                   </AlertDescription>
                 </Alert>
 
                 <Alert className="border-cyber-red/50 bg-cyber-red/10">
                   <Lock className="w-4 h-4" />
                   <AlertDescription className="text-cyber-red matrix-text">
-                    <strong>Secure Reset:</strong> Requires admin password "GDG-IET" to permanently wipe all submission data. Use with extreme caution during the event.
+                    <strong>Secure Reset:</strong> Requires admin password
+                    "GDG-IET" to permanently wipe all submission data. Use with
+                    extreme caution during the event.
                   </AlertDescription>
                 </Alert>
               </CardContent>
