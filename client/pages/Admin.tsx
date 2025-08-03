@@ -68,7 +68,7 @@ export default function Admin() {
     refreshData();
 
     // Set up real-time updates
-    const unsubscribe = realtimeDataStore.subscribe(refreshData);
+    const unsubscribe = netlifyDataStore.subscribe(refreshData);
 
     // Auto-refresh every 5 seconds
     const interval = setInterval(refreshData, 5000);
