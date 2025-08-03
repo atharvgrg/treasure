@@ -26,7 +26,9 @@ class CentralDataStore {
       console.log("🔧 Development mode - using localStorage fallback");
       this.loadFromLocalStorage();
     } else {
-      console.log("🌐 Production mode - using Netlify Functions for multi-device");
+      console.log(
+        "🌐 Production mode - using Netlify Functions for multi-device",
+      );
       await this.loadFromAPI();
       this.setupPolling();
     }
@@ -76,7 +78,9 @@ class CentralDataStore {
       if (result.success) {
         this.submissions = result.data || [];
         this.notifyListeners();
-        console.log(`📊 Loaded ${this.submissions.length} submissions from API`);
+        console.log(
+          `📊 Loaded ${this.submissions.length} submissions from API`,
+        );
       }
     } catch (error) {
       console.warn("API not available, using localStorage fallback:", error);
@@ -90,7 +94,9 @@ class CentralDataStore {
       if (data) {
         const parsed = JSON.parse(data);
         this.submissions = parsed.submissions || [];
-        console.log(`📋 Loaded ${this.submissions.length} submissions from localStorage`);
+        console.log(
+          `📋 Loaded ${this.submissions.length} submissions from localStorage`,
+        );
       } else {
         this.submissions = [];
         console.log("📋 Starting with empty submissions");
@@ -134,8 +140,6 @@ class CentralDataStore {
 
     console.log("🔄 Multi-device polling active (5 second intervals)");
   }
-
-
 
   private notifyListeners(): void {
     this.listeners.forEach((callback) => callback());
