@@ -143,8 +143,8 @@ export default function Index() {
         completedLevels: getCompletedLevels(level.level),
       };
 
-      // Save to central database
-      await centralDataStore.addSubmission(submission);
+      // Save to production Firebase database
+      await productionDataStore.addSubmission(submission);
 
       setSuccess(
         `Success! ${level.name} completed. ${level.level === 10 ? "TREASURE FOUND! 🏆" : "Keep going!"}`,
