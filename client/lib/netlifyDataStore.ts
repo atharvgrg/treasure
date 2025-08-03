@@ -50,7 +50,7 @@ class NetlifyDataStore {
     try {
       const response = await fetch("/api/health", {
         method: "GET",
-        headers: { "Accept": "application/json" }
+        headers: { Accept: "application/json" },
       });
 
       if (!response.ok) return true;
