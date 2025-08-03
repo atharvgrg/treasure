@@ -102,13 +102,13 @@ export default function Admin() {
     URL.revokeObjectURL(url);
   };
 
-  const clearData = () => {
+  const clearData = async () => {
     if (
       window.confirm(
         "Are you sure you want to clear all data? This cannot be undone!",
       )
     ) {
-      dataStore.clearAllData();
+      await realtimeDataStore.clearAllData();
     }
   };
 
