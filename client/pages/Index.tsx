@@ -19,7 +19,7 @@ import {
   getCompletedLevels,
   type Submission,
 } from "@shared/gameConfig";
-import { netlifyDataStore } from "@/lib/netlifyDataStore";
+import { centralDataStore } from "@/lib/centralDataStore";
 import {
   Terminal,
   Star,
@@ -39,21 +39,23 @@ export default function Index() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isTypingComplete, setIsTypingComplete] = useState(false);
-  const [isDevelopmentMode, setIsDevelopmentMode] = useState(false);
+  const [dbStatus, setDbStatus] = useState<{initialized: boolean; submissionCount: number; retryAttempts: number}>({initialized: false, submissionCount: 0, retryAttempts: 0});
   const navigate = useNavigate();
   const { isInitialized } = useRealtimeStore();
 
-  // Check if we're in development mode
+  // Monitor database status
   useEffect(() => {
-    const checkApiAvailability = async () => {
-      try {
-        const response = await fetch("/api/health");
-        setIsDevelopmentMode(!response.ok);
-      } catch {
-        setIsDevelopmentMode(true);
-      }
+    const updateStatus = () => {
+      setDbStatus(centralDataStore.getStatus());
     };
-    checkApiAvailability();
+
+    // Initial check
+    updateStatus();
+
+    // Update every second while initializing
+    const interval = setInterval(updateStatus, 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -67,9 +69,9 @@ export default function Index() {
     setSuccess("");
     setIsSubmitting(true);
 
-    if (!isInitialized) {
+    if (!dbStatus.initialized) {
       setError(
-        "System is still initializing. Please wait a moment and try again.",
+        "Central database is still initializing. Please wait a moment and try again.",
       );
       setIsSubmitting(false);
       return;
@@ -121,8 +123,8 @@ export default function Index() {
         completedLevels: getCompletedLevels(level.level),
       };
 
-      // Save to Netlify data store
-      await netlifyDataStore.addSubmission(submission);
+      // Save to central database
+      await centralDataStore.addSubmission(submission);
 
       setSuccess(
         `Success! ${level.name} completed. ${level.level === 10 ? "TREASURE FOUND! 🏆" : "Keep going!"}`,
@@ -364,24 +366,32 @@ export default function Index() {
             </Card>
           </div>
 
-          {/* Development Mode Warning */}
-          {isDevelopmentMode && (
-            <Card className="mt-8 glow-border bg-card/80 backdrop-blur border-2 border-cyber-blue/50">
-              <CardContent className="pt-6">
-                <div className="text-center space-y-3">
-                  <h3 className="text-xl font-semibold text-cyber-blue matrix-text glow-text flex items-center justify-center gap-2">
-                    <Terminal className="w-6 h-6" />
-                    🔧 Development Mode
-                  </h3>
-                  <p className="text-sm text-cyber-blue/80 matrix-text leading-relaxed">
-                    API functions not available - using localStorage for data
-                    storage. Deploy to Netlify for full multi-device
-                    functionality.
+          {/* Database Status */}
+          <Card className="mt-8 glow-border bg-card/80 backdrop-blur border-2 border-cyber-green/50">
+            <CardContent className="pt-6">
+              <div className="text-center space-y-3">
+                <h3 className="text-xl font-semibold text-cyber-green matrix-text glow-text flex items-center justify-center gap-2">
+                  <Terminal className="w-6 h-6" />
+                  🌐 Central Database Status
+                </h3>
+                <div className="space-y-2">
+                  <p className={`text-sm matrix-text leading-relaxed ${
+                    dbStatus.initialized ? 'text-cyber-green' : 'text-cyber-blue'
+                  }`}>
+                    {dbStatus.initialized ?
+                      `✅ Connected • ${dbStatus.submissionCount} submissions stored` :
+                      `🔄 Initializing central database... (Attempt ${dbStatus.retryAttempts + 1}/5)`
+                    }
                   </p>
+                  {!dbStatus.initialized && (
+                    <p className="text-xs text-cyber-blue/60 matrix-text">
+                      Multi-device synchronization will be available once connected
+                    </p>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          )}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Info Card */}
           <Card className="mt-8 glow-border bg-card/80 backdrop-blur border-2 border-cyber-purple/30">
