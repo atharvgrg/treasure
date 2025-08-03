@@ -1,7 +1,7 @@
 // This is a test utility to verify the application works end-to-end
 // Run this in the browser console to create test data
 
-import { dataStore } from "./dataStore";
+import { realtimeDataStore } from "./realtimeDataStore";
 import { generateSubmissionId } from "@shared/gameConfig";
 import type { Submission } from "@shared/gameConfig";
 
