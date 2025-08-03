@@ -122,7 +122,9 @@ export default function Admin() {
       setResetPassword("");
       setIsResetDialogOpen(false);
       // Show success message
-      alert("🔥 All data has been securely wiped! Production database reset complete.");
+      alert(
+        "🔥 All data has been securely wiped! Production database reset complete.",
+      );
     } else {
       setResetError("Incorrect password. Access denied.");
     }
