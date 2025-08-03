@@ -55,16 +55,66 @@ class CentralDataStore {
     }
   }
 
-  private async ensureTableExists() {
-    // In-memory store doesn't need table creation
-    console.log("✅ Using in-memory store - no table setup needed");
+  private async loadFromAPI() {
+    try {
+      const response = await fetch("/api/submissions", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Response is not JSON - API may not be available");
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        this.submissions = result.data || [];
+        this.notifyListeners();
+        console.log(`📊 Loaded ${this.submissions.length} submissions from API`);
+      }
+    } catch (error) {
+      console.warn("API not available, using localStorage fallback:", error);
+      this.loadFromLocalStorage();
+    }
   }
 
-  private async loadSubmissions() {
-    // In-memory store starts with empty data
-    this.submissions = [];
-    this.notifyListeners();
-    console.log("📋 In-memory store ready - starting with empty data");
+  private loadFromLocalStorage() {
+    try {
+      const data = localStorage.getItem("treasure_shell_submissions");
+      if (data) {
+        const parsed = JSON.parse(data);
+        this.submissions = parsed.submissions || [];
+        console.log(`📋 Loaded ${this.submissions.length} submissions from localStorage`);
+      } else {
+        this.submissions = [];
+        console.log("📋 Starting with empty submissions");
+      }
+      this.notifyListeners();
+    } catch (error) {
+      console.error("Error loading from localStorage:", error);
+      this.submissions = [];
+      this.notifyListeners();
+    }
+  }
+
+  private saveToLocalStorage() {
+    try {
+      const data = {
+        version: "3.0",
+        submissions: this.submissions,
+        lastUpdated: Date.now(),
+        source: "netlify-functions-fallback",
+      };
+      localStorage.setItem("treasure_shell_submissions", JSON.stringify(data));
+    } catch (error) {
+      console.error("Error saving to localStorage:", error);
+    }
   }
 
   private setupRealtimeSubscription() {
