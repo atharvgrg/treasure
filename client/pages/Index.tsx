@@ -53,6 +53,12 @@ export default function Index() {
     setSuccess("");
     setIsSubmitting(true);
 
+    if (!isInitialized) {
+      setError("System is still initializing. Please wait a moment and try again.");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       // Validate inputs
       if (!teamName.trim()) {
