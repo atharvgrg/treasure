@@ -1,7 +1,7 @@
 // This is a test utility to verify the application works end-to-end
 // Run this in the browser console to create test data
 
-import { realtimeDataStore } from "./realtimeDataStore";
+import { netlifyDataStore } from "./netlifyDataStore";
 import { generateSubmissionId } from "@shared/gameConfig";
 import type { Submission } from "@shared/gameConfig";
 
