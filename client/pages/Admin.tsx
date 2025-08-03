@@ -90,7 +90,7 @@ export default function Admin() {
   };
 
   const exportData = () => {
-    const data = dataStore.exportData();
+    const data = realtimeDataStore.exportData();
     const blob = new Blob([data], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
