@@ -36,15 +36,31 @@ export default function Index() {
       if (!teamName.trim()) {
         throw new Error("Team name is required");
       }
-      
+
+      if (teamName.trim().length < 2) {
+        throw new Error("Team name must be at least 2 characters long");
+      }
+
+      if (teamName.trim().length > 50) {
+        throw new Error("Team name must be 50 characters or less");
+      }
+
+      if (!/^[a-zA-Z0-9\s\-_]+$/.test(teamName.trim())) {
+        throw new Error("Team name can only contain letters, numbers, spaces, hyphens, and underscores");
+      }
+
       if (!password.trim()) {
         throw new Error("Password is required");
       }
 
+      if (password.trim().length !== 32) {
+        throw new Error("Password must be exactly 32 characters long");
+      }
+
       // Validate password and get level
-      const level = validatePassword(password);
+      const level = validatePassword(password.trim());
       if (!level) {
-        throw new Error("Invalid password. Check your spelling and try again.");
+        throw new Error("Invalid password. Double-check the password from your completed level.");
       }
 
       // Create submission
