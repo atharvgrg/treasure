@@ -50,6 +50,13 @@ const App = () => {
 
 // Prevent multiple root creation during hot reload
 const rootElement = document.getElementById("root")!;
-if (!rootElement._reactRootContainer) {
-  createRoot(rootElement).render(<App />);
+
+// Check if we already have a root attached to this element
+if (!(rootElement as any)._reactRoot) {
+  const root = createRoot(rootElement);
+  (rootElement as any)._reactRoot = root;
+  root.render(<App />);
+} else {
+  // Re-render on existing root during hot reload
+  (rootElement as any)._reactRoot.render(<App />);
 }
