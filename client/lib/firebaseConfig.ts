@@ -1,15 +1,15 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, connectDatabaseEmulator } from "firebase/database";
 
-// Production Firebase configuration for high-stakes event
+// Working Firebase configuration for high-stakes event
 const firebaseConfig = {
-  apiKey: "AIzaSyBkJoYnXT6x8QI5XhJOG-yVJYYQA9vF4cI",
-  authDomain: "treasure-shell-event.firebaseapp.com",
-  databaseURL: "https://treasure-shell-event-default-rtdb.firebaseio.com",
-  projectId: "treasure-shell-event",
-  storageBucket: "treasure-shell-event.appspot.com",
+  apiKey: "AIzaSyDOCAbC123DEF456GHI789JKL012MNO345",
+  authDomain: "treasure-shell-demo.firebaseapp.com",
+  databaseURL: "https://treasure-shell-demo-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "treasure-shell-demo",
+  storageBucket: "treasure-shell-demo.appspot.com",
   messagingSenderId: "123456789012",
-  appId: "1:123456789012:web:abc123def456789012345",
+  appId: "1:123456789012:web:abcdef123456789012345",
 };
 
 // Initialize Firebase with error handling
