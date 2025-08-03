@@ -49,6 +49,12 @@ class NetlifyDataStore {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      // Check if response is actually JSON
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Response is not JSON - API may not be available");
+      }
+
       const result = await response.json();
 
       if (result.success) {
@@ -60,7 +66,7 @@ class NetlifyDataStore {
         throw new Error(result.error || "Failed to load submissions");
       }
     } catch (error) {
-      console.error("Error loading submissions:", error);
+      console.warn("API not available, using localStorage fallback:", error);
       this.loadFromFallback();
     }
   }
