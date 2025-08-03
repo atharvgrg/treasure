@@ -288,11 +288,34 @@ class CentralDataStore {
       throw new Error("Store not initialized. Cannot clear data.");
     }
 
-    console.log("🗑️ Clearing ALL data from in-memory store");
+    console.log("🗑️ Clearing ALL data");
 
+    if (!this.isDevelopmentMode) {
+      try {
+        const response = await fetch("/api/submissions?password=GDG-IET", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (response.ok) {
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            const result = await response.json();
+            if (result.success) {
+              console.log("✅ Data cleared from API");
+            }
+          }
+        }
+      } catch (error) {
+        console.warn("⚠️ API clear failed, clearing locally only:", error);
+      }
+    }
+
+    // Clear local data
     this.submissions = [];
+    this.saveToLocalStorage();
     this.notifyListeners();
-    console.log("✅ All data cleared from memory");
+    console.log("✅ All data cleared");
   }
 
   exportData(): string {
