@@ -18,7 +18,17 @@ class NetlifyDataStore {
 
   private async initialize() {
     try {
-      // Load existing data
+      // Check if we're in development mode first
+      const isDevelopment = await this.checkDevelopmentMode();
+
+      if (isDevelopment) {
+        console.log("Development mode detected - using localStorage only");
+        this.loadFromFallback();
+        this.isInitialized = true;
+        return;
+      }
+
+      // Load existing data from API
       await this.loadSubmissions();
 
       // Set up polling for real-time updates
@@ -27,12 +37,32 @@ class NetlifyDataStore {
       this.isInitialized = true;
       console.log("Netlify data store initialized successfully");
     } catch (error) {
-      console.error(
+      console.warn(
         "Failed to initialize Netlify store, using fallback:",
         error,
       );
       this.loadFromFallback();
       this.isInitialized = true;
+    }
+  }
+
+  private async checkDevelopmentMode(): Promise<boolean> {
+    try {
+      const response = await fetch("/api/health", {
+        method: "GET",
+        headers: { "Accept": "application/json" }
+      });
+
+      if (!response.ok) return true;
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        return true;
+      }
+
+      return false;
+    } catch {
+      return true;
     }
   }
 
