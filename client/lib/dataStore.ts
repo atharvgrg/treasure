@@ -49,18 +49,57 @@ class DataStore {
   }
 
   addSubmission(submission: Submission): void {
+    // Validate submission data
+    if (!submission.teamName || submission.teamName.trim().length === 0) {
+      throw new Error("Team name is required");
+    }
+
+    if (submission.teamName.trim().length > 50) {
+      throw new Error("Team name must be 50 characters or less");
+    }
+
+    if (!Number.isInteger(submission.level) || submission.level < 1 || submission.level > 10) {
+      throw new Error("Invalid level number");
+    }
+
+    if (!Number.isInteger(submission.difficulty) || submission.difficulty < 1 || submission.difficulty > 5) {
+      throw new Error("Difficulty must be between 1 and 5 stars");
+    }
+
+    if (!submission.id || submission.id.trim().length === 0) {
+      throw new Error("Submission ID is required");
+    }
+
     const data = this.getStorageData();
-    
+
+    // Check for duplicate submission ID
+    if (data.submissions.find(s => s.id === submission.id)) {
+      throw new Error("Duplicate submission ID");
+    }
+
     // Check for duplicate team submissions for the same level
     const existingSubmission = data.submissions.find(
       s => s.teamName.toLowerCase() === submission.teamName.toLowerCase() && s.level === submission.level
     );
-    
+
     if (existingSubmission) {
       throw new Error(`Team "${submission.teamName}" has already submitted for Level ${submission.level}`);
     }
-    
-    data.submissions.push(submission);
+
+    // Validate team name doesn't contain inappropriate characters
+    const sanitizedTeamName = submission.teamName.trim().replace(/[<>\"'&]/g, '');
+    if (sanitizedTeamName.length !== submission.teamName.trim().length) {
+      throw new Error("Team name contains invalid characters");
+    }
+
+    // Create clean submission object
+    const cleanSubmission: Submission = {
+      ...submission,
+      teamName: sanitizedTeamName,
+      timestamp: submission.timestamp || Date.now(),
+    };
+
+    data.submissions.push(cleanSubmission);
     data.submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp);
     this.saveStorageData(data);
   }
