@@ -55,59 +55,13 @@ class CentralDataStore {
   }
 
   private setupRealtimeSubscription() {
-    if (!supabase) {
-      console.log("⚠️ Supabase not available, skipping real-time subscription");
-      return;
-    }
-
-    try {
-      supabase
-        .channel("submissions_channel")
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "submissions",
-          },
-          (payload) => {
-            console.log("🔄 Real-time update received:", payload);
-            this.handleRealtimeUpdate(payload);
-          },
-        )
-        .subscribe((status) => {
-          console.log(`🔌 Real-time subscription status: ${status}`);
-          if (status === 'SUBSCRIPTION_ERROR') {
-            console.warn("⚠️ Real-time subscription failed - using polling only");
-          }
-        });
-    } catch (error) {
-      console.warn("⚠️ Failed to setup real-time subscription:", error);
-    }
+    console.log("📡 In-memory store - real-time updates handled via listeners");
+    // In-memory store uses direct listener notifications
   }
 
   private setupPolling() {
-    if (!supabase) {
-      console.log("⚠️ Supabase not available, skipping polling");
-      return;
-    }
-
-    // Backup polling every 10 seconds
-    this.pollInterval = setInterval(async () => {
-      try {
-        await this.loadSubmissions();
-      } catch (error) {
-        if (error instanceof Error && (
-          error.message.includes('NetworkError') ||
-          error.message.includes('fetch') ||
-          error.name === 'NetworkError'
-        )) {
-          console.warn("🌐 Network error during polling - skipping");
-        } else {
-          console.warn("⚠️ Polling failed:", error);
-        }
-      }
-    }, 10000);
+    console.log("🔄 In-memory store - no polling needed");
+    // In-memory store doesn't need polling
   }
 
   private handleRealtimeUpdate(payload: any) {
