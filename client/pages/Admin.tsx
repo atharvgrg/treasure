@@ -30,7 +30,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { realtimeDataStore } from "@/lib/realtimeDataStore";
+import { netlifyDataStore } from "@/lib/netlifyDataStore";
 import { LEVELS, type Submission } from "@shared/gameConfig";
 import {
   Trophy,
