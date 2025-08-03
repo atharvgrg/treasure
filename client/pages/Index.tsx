@@ -50,7 +50,7 @@ export default function Index() {
     submissionCount: 0,
     retryAttempts: 0,
     databaseConnected: false,
-    message: "Initializing..."
+    message: "Initializing...",
   });
   const navigate = useNavigate();
   const { isInitialized } = useRealtimeStore();
@@ -379,26 +379,40 @@ export default function Index() {
           </div>
 
           {/* Database Status */}
-          <Card className={`mt-8 glow-border bg-card/80 backdrop-blur border-2 ${
-            dbStatus.databaseConnected ? 'border-cyber-green/50' : 'border-cyber-blue/50'
-          }`}>
+          <Card
+            className={`mt-8 glow-border bg-card/80 backdrop-blur border-2 ${
+              dbStatus.databaseConnected
+                ? "border-cyber-green/50"
+                : "border-cyber-blue/50"
+            }`}
+          >
             <CardContent className="pt-6">
               <div className="text-center space-y-3">
-                <h3 className={`text-xl font-semibold matrix-text glow-text flex items-center justify-center gap-2 ${
-                  dbStatus.databaseConnected ? 'text-cyber-green' : 'text-cyber-blue'
-                }`}>
+                <h3
+                  className={`text-xl font-semibold matrix-text glow-text flex items-center justify-center gap-2 ${
+                    dbStatus.databaseConnected
+                      ? "text-cyber-green"
+                      : "text-cyber-blue"
+                  }`}
+                >
                   <Terminal className="w-6 h-6" />
-                  {dbStatus.databaseConnected ? '🌐' : '🔄'} Database Status
+                  {dbStatus.databaseConnected ? "🌐" : "🔄"} Database Status
                 </h3>
                 <div className="space-y-2">
-                  <p className={`text-sm matrix-text leading-relaxed ${
-                    dbStatus.databaseConnected ? 'text-cyber-green' : 'text-cyber-blue'
-                  }`}>
-                    {dbStatus.databaseConnected ? '✅' : '⚠️'} {dbStatus.message}
+                  <p
+                    className={`text-sm matrix-text leading-relaxed ${
+                      dbStatus.databaseConnected
+                        ? "text-cyber-green"
+                        : "text-cyber-blue"
+                    }`}
+                  >
+                    {dbStatus.databaseConnected ? "✅" : "⚠️"}{" "}
+                    {dbStatus.message}
                   </p>
                   {!dbStatus.databaseConnected && dbStatus.initialized && (
                     <p className="text-xs text-cyber-blue/60 matrix-text">
-                      Submissions saved locally - see SUPABASE_SETUP.md for database setup
+                      Submissions saved locally - see SUPABASE_SETUP.md for
+                      database setup
                     </p>
                   )}
                   {!dbStatus.initialized && (

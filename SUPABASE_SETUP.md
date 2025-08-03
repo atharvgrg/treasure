@@ -5,13 +5,16 @@
 The initialization errors are happening because the Supabase database table needs to be created manually. Here's how to fix it:
 
 ### 1. **Go to Supabase Dashboard**
+
 Visit: https://supabase.com/dashboard/project/qkoyrnxoepblvzzxafjp
 
 ### 2. **Open SQL Editor**
+
 - Click on "SQL Editor" in the left sidebar
 - Click "New Query"
 
 ### 3. **Create the Table**
+
 Copy and paste this SQL:
 
 ```sql
@@ -32,16 +35,19 @@ CREATE INDEX IF NOT EXISTS idx_submissions_timestamp ON submissions(timestamp);
 ```
 
 ### 4. **Run the SQL**
+
 - Click "Run" button
 - You should see "Success. No rows returned"
 
 ### 5. **Verify Table Creation**
+
 - Go to "Table Editor" in the left sidebar
 - You should see the "submissions" table
 
 ## ✅ After Setup
 
 Once the table is created:
+
 1. Refresh your application
 2. The initialization errors will stop
 3. Multi-device functionality will work perfectly

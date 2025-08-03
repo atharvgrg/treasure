@@ -1,9 +1,10 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 import { Submission } from "@shared/gameConfig";
 
 // Supabase configuration for central database
-const SUPABASE_URL = 'https://qkoyrnxoepblvzzxafjp.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFrb3lybnhvZXBibHZ6enhhamlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkzNDk0MzIsImV4cCI6MjA0NDkyNTQzMn0.Q7wqbJOsKYBUqJRKJdAJTe2KNZ_ttvN2G_2Pq5XZ8co';
+const SUPABASE_URL = "https://qkoyrnxoepblvzzxafjp.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFrb3lybnhvZXBibHZ6enhhamlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkzNDk0MzIsImV4cCI6MjA0NDkyNTQzMn0.Q7wqbJOsKYBUqJRKJdAJTe2KNZ_ttvN2G_2Pq5XZ8co";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -51,21 +52,32 @@ class CentralDataStore {
         break;
       } catch (error) {
         this.retryAttempts++;
-        console.error(`❌ Initialization attempt ${this.retryAttempts} failed:`, error);
+        console.error(
+          `❌ Initialization attempt ${this.retryAttempts} failed:`,
+          error,
+        );
 
         if (this.retryAttempts >= this.maxRetries) {
-          console.error(`❌ Failed to initialize database after ${this.maxRetries} attempts.`);
-          console.error("🔧 Please ensure the Supabase database is properly configured.");
+          console.error(
+            `❌ Failed to initialize database after ${this.maxRetries} attempts.`,
+          );
+          console.error(
+            "🔧 Please ensure the Supabase database is properly configured.",
+          );
 
           // Initialize with empty state as fallback
           this.submissions = [];
           this.isInitialized = true;
-          console.log("⚠️ Initialized with empty state - submissions will not persist");
+          console.log(
+            "⚠️ Initialized with empty state - submissions will not persist",
+          );
           break;
         }
 
         // Wait before retrying
-        await new Promise(resolve => setTimeout(resolve, 2000 * this.retryAttempts));
+        await new Promise((resolve) =>
+          setTimeout(resolve, 2000 * this.retryAttempts),
+        );
       }
     }
   }
@@ -74,8 +86,8 @@ class CentralDataStore {
     try {
       // First, try to query the table to see if it exists
       const { data, error: queryError } = await supabase
-        .from('submissions')
-        .select('id')
+        .from("submissions")
+        .select("id")
         .limit(1);
 
       if (!queryError) {
@@ -88,24 +100,21 @@ class CentralDataStore {
       // Table doesn't exist, try to create it using a simple insert operation
       // This will fail but might trigger auto-creation in some Supabase setups
       const testSubmission = {
-        id: 'test-init-' + Date.now(),
-        team_name: 'init_test',
+        id: "test-init-" + Date.now(),
+        team_name: "init_test",
         level: 1,
         difficulty: 1,
         completed_levels: [1],
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       const { error: insertError } = await supabase
-        .from('submissions')
+        .from("submissions")
         .insert(testSubmission);
 
       if (!insertError) {
         // If insert succeeded, delete the test record
-        await supabase
-          .from('submissions')
-          .delete()
-          .eq('id', testSubmission.id);
+        await supabase.from("submissions").delete().eq("id", testSubmission.id);
         console.log("✅ Table created successfully via insert");
       } else {
         console.log("⚠️ Could not auto-create table:", insertError.message);
@@ -121,13 +130,17 @@ class CentralDataStore {
   private async loadSubmissions() {
     try {
       const { data, error } = await supabase
-        .from('submissions')
-        .select('*')
-        .order('level', { ascending: false })
-        .order('timestamp', { ascending: true });
+        .from("submissions")
+        .select("*")
+        .order("level", { ascending: false })
+        .order("timestamp", { ascending: true });
 
       if (error) {
-        if (error.message.includes('does not exist') || error.message.includes('relation') || error.message.includes('table')) {
+        if (
+          error.message.includes("does not exist") ||
+          error.message.includes("relation") ||
+          error.message.includes("table")
+        ) {
           console.log("📋 Table doesn't exist yet, starting with empty data");
           this.submissions = [];
           this.notifyListeners();
@@ -138,9 +151,14 @@ class CentralDataStore {
 
       this.submissions = (data || []).map(this.mapFromSupabase);
       this.notifyListeners();
-      console.log(`📊 Loaded ${this.submissions.length} submissions from central database`);
+      console.log(
+        `📊 Loaded ${this.submissions.length} submissions from central database`,
+      );
     } catch (error) {
-      console.warn("⚠️ Load submissions failed, starting with empty data:", error);
+      console.warn(
+        "⚠️ Load submissions failed, starting with empty data:",
+        error,
+      );
       this.submissions = [];
       this.notifyListeners();
       // Don't throw error - continue with empty state
@@ -149,17 +167,18 @@ class CentralDataStore {
 
   private setupRealtimeSubscription() {
     supabase
-      .channel('submissions_channel')
-      .on('postgres_changes', 
-        { 
-          event: '*', 
-          schema: 'public', 
-          table: 'submissions' 
-        }, 
+      .channel("submissions_channel")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "submissions",
+        },
         (payload) => {
-          console.log('🔄 Real-time update received:', payload);
+          console.log("🔄 Real-time update received:", payload);
           this.handleRealtimeUpdate(payload);
-        }
+        },
       )
       .subscribe((status) => {
         console.log(`🔌 Real-time subscription status: ${status}`);
@@ -178,19 +197,26 @@ class CentralDataStore {
   }
 
   private handleRealtimeUpdate(payload: any) {
-    if (payload.eventType === 'INSERT') {
+    if (payload.eventType === "INSERT") {
       const newSubmission = this.mapFromSupabase(payload.new);
-      this.submissions = [newSubmission, ...this.submissions.filter(s => s.id !== newSubmission.id)];
-      this.submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp);
-    } else if (payload.eventType === 'DELETE') {
-      this.submissions = this.submissions.filter(s => s.id !== payload.old.id);
-    } else if (payload.eventType === 'UPDATE') {
+      this.submissions = [
+        newSubmission,
+        ...this.submissions.filter((s) => s.id !== newSubmission.id),
+      ];
+      this.submissions.sort(
+        (a, b) => b.level - a.level || a.timestamp - b.timestamp,
+      );
+    } else if (payload.eventType === "DELETE") {
+      this.submissions = this.submissions.filter(
+        (s) => s.id !== payload.old.id,
+      );
+    } else if (payload.eventType === "UPDATE") {
       const updatedSubmission = this.mapFromSupabase(payload.new);
-      this.submissions = this.submissions.map(s => 
-        s.id === updatedSubmission.id ? updatedSubmission : s
+      this.submissions = this.submissions.map((s) =>
+        s.id === updatedSubmission.id ? updatedSubmission : s,
       );
     }
-    
+
     this.notifyListeners();
   }
 
@@ -201,7 +227,7 @@ class CentralDataStore {
       level: data.level,
       difficulty: data.difficulty,
       completedLevels: data.completed_levels,
-      timestamp: data.timestamp
+      timestamp: data.timestamp,
     };
   }
 
@@ -212,7 +238,7 @@ class CentralDataStore {
       level: submission.level,
       difficulty: submission.difficulty,
       completed_levels: submission.completedLevels,
-      timestamp: submission.timestamp
+      timestamp: submission.timestamp,
     };
   }
 
@@ -225,7 +251,9 @@ class CentralDataStore {
       throw new Error("Database not initialized. Cannot save submission.");
     }
 
-    console.log(`📝 Adding submission to central database: ${submission.teamName} - Level ${submission.level}`);
+    console.log(
+      `📝 Adding submission to central database: ${submission.teamName} - Level ${submission.level}`,
+    );
 
     // Check for duplicates locally first
     const existingSubmission = this.submissions.find(
@@ -235,7 +263,9 @@ class CentralDataStore {
     );
 
     if (existingSubmission) {
-      throw new Error(`Team "${submission.teamName}" has already submitted for Level ${submission.level}`);
+      throw new Error(
+        `Team "${submission.teamName}" has already submitted for Level ${submission.level}`,
+      );
     }
 
     try {
@@ -243,16 +273,21 @@ class CentralDataStore {
       const supabaseData = this.mapToSupabase(submission);
 
       const { data, error } = await supabase
-        .from('submissions')
+        .from("submissions")
         .insert(supabaseData)
         .select()
         .single();
 
       if (error) {
-        console.warn("⚠️ Database save failed, storing locally only:", error.message);
+        console.warn(
+          "⚠️ Database save failed, storing locally only:",
+          error.message,
+        );
         // Fallback: store in memory only
         this.submissions = [submission, ...this.submissions];
-        this.submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp);
+        this.submissions.sort(
+          (a, b) => b.level - a.level || a.timestamp - b.timestamp,
+        );
         this.notifyListeners();
         console.log("💾 Submission stored locally (database unavailable)");
         return;
@@ -263,14 +298,21 @@ class CentralDataStore {
       // Real-time update will handle the local state update
       // But also update immediately for better UX
       const newSubmission = this.mapFromSupabase(data);
-      this.submissions = [newSubmission, ...this.submissions.filter(s => s.id !== newSubmission.id)];
-      this.submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp);
+      this.submissions = [
+        newSubmission,
+        ...this.submissions.filter((s) => s.id !== newSubmission.id),
+      ];
+      this.submissions.sort(
+        (a, b) => b.level - a.level || a.timestamp - b.timestamp,
+      );
       this.notifyListeners();
     } catch (error) {
       console.warn("⚠️ Database error, storing locally only:", error);
       // Graceful fallback: store in memory
       this.submissions = [submission, ...this.submissions];
-      this.submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp);
+      this.submissions.sort(
+        (a, b) => b.level - a.level || a.timestamp - b.timestamp,
+      );
       this.notifyListeners();
       console.log("💾 Submission stored locally (database error)");
     }
@@ -345,19 +387,25 @@ class CentralDataStore {
 
     try {
       const { error } = await supabase
-        .from('submissions')
+        .from("submissions")
         .delete()
-        .neq('id', ''); // Delete all records
+        .neq("id", ""); // Delete all records
 
       if (error) {
-        if (error.message.includes('does not exist') || error.message.includes('relation')) {
+        if (
+          error.message.includes("does not exist") ||
+          error.message.includes("relation")
+        ) {
           console.log("📋 Table doesn't exist, nothing to clear");
         } else {
           throw new Error(`Failed to clear data: ${error.message}`);
         }
       }
     } catch (error) {
-      console.warn("⚠️ Clear operation failed, clearing local state only:", error);
+      console.warn(
+        "⚠️ Clear operation failed, clearing local state only:",
+        error,
+      );
     }
 
     this.submissions = [];
@@ -372,7 +420,7 @@ class CentralDataStore {
         submissions: this.submissions,
         lastUpdated: Date.now(),
         source: "central-database-supabase",
-        totalSubmissions: this.submissions.length
+        totalSubmissions: this.submissions.length,
       },
       null,
       2,
@@ -400,7 +448,8 @@ class CentralDataStore {
     databaseConnected: boolean;
     message: string;
   } {
-    let databaseConnected = this.isInitialized && this.retryAttempts < this.maxRetries;
+    let databaseConnected =
+      this.isInitialized && this.retryAttempts < this.maxRetries;
     let message = "";
 
     if (!this.isInitialized) {
@@ -418,7 +467,7 @@ class CentralDataStore {
       submissionCount: this.submissions.length,
       retryAttempts: this.retryAttempts,
       databaseConnected,
-      message
+      message,
     };
   }
 
@@ -441,7 +490,7 @@ if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", () => {
     centralDataStore.destroy();
   });
-  
+
   // Clear any existing local storage to ensure no local data conflicts
   try {
     localStorage.removeItem("treasure_shell_submissions");
