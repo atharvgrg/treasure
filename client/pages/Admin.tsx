@@ -59,16 +59,16 @@ export default function Admin() {
   const { isInitialized } = useRealtimeStore();
 
   const refreshData = () => {
-    setSubmissions(productionDataStore.getSubmissions());
-    setLeaderboard(productionDataStore.getLeaderboard());
+    setSubmissions(postgresDataStore.getSubmissions());
+    setLeaderboard(postgresDataStore.getLeaderboard());
     setLastUpdate(new Date());
   };
 
   useEffect(() => {
     refreshData();
 
-    // Set up real-time updates from Firebase
-    const unsubscribe = productionDataStore.subscribe(refreshData);
+    // Set up real-time updates from PostgreSQL
+    const unsubscribe = postgresDataStore.subscribe(refreshData);
 
     // Auto-refresh every 5 seconds
     const interval = setInterval(refreshData, 5000);
