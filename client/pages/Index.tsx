@@ -83,7 +83,15 @@ export default function Index() {
 
     if (!dbStatus.initialized) {
       setError(
-        "Central database is still initializing. Please wait a moment and try again.",
+        "Production database is still initializing. Please wait a moment and try again.",
+      );
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!dbStatus.databaseConnected) {
+      setError(
+        "No connection to production database! Please check your internet connection.",
       );
       setIsSubmitting(false);
       return;
