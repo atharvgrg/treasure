@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRealtimeStore } from "@/hooks/useRealtimeStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -177,7 +178,7 @@ export default function Index() {
             {/* Subtitle */}
             <div className="relative mb-6">
               <p className="text-2xl md:text-3xl text-cyber-blue matrix-text mb-4 font-semibold">
-                💻 Crack the Clues • Break the Shell • Claim the Root ����
+                💻 Crack the Clues • Break the Shell • Claim the Root 💎
               </p>
               <p className="text-xl text-cyber-green matrix-text font-medium">
                 🧑‍💻 A Terminal Puzzle Challenge 🧠
