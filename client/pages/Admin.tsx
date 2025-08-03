@@ -59,8 +59,8 @@ export default function Admin() {
   const { isInitialized } = useRealtimeStore();
 
   const refreshData = () => {
-    setSubmissions(centralDataStore.getSubmissions());
-    setLeaderboard(centralDataStore.getLeaderboard());
+    setSubmissions(productionDataStore.getSubmissions());
+    setLeaderboard(productionDataStore.getLeaderboard());
     setLastUpdate(new Date());
   };
 
