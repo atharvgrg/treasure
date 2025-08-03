@@ -67,8 +67,8 @@ export default function Admin() {
   useEffect(() => {
     refreshData();
 
-    // Set up real-time updates
-    const unsubscribe = centralDataStore.subscribe(refreshData);
+    // Set up real-time updates from Firebase
+    const unsubscribe = productionDataStore.subscribe(refreshData);
 
     // Auto-refresh every 5 seconds
     const interval = setInterval(refreshData, 5000);
