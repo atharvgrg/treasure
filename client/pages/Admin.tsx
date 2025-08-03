@@ -112,11 +112,11 @@ export default function Admin() {
     }
   };
 
-  const handleSecureReset = () => {
+  const handleSecureReset = async () => {
     setResetError("");
 
     if (resetPassword.trim() === "GDG-IET") {
-      dataStore.clearAllData();
+      await realtimeDataStore.clearAllData();
       setResetPassword("");
       setIsResetDialogOpen(false);
       // Show success message
