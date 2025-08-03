@@ -513,13 +513,19 @@ class CentralDataStore {
     message: string;
   } {
     let databaseConnected =
-      this.isInitialized && this.retryAttempts < this.maxRetries;
+      this.isInitialized && this.retryAttempts < this.maxRetries && supabase !== null;
     let message = "";
 
-    if (!this.isInitialized) {
-      message = `Initializing... (Attempt ${this.retryAttempts + 1}/${this.maxRetries})`;
+    if (supabaseError) {
+      message = "Database client error - Running offline";
+      databaseConnected = false;
+    } else if (!this.isInitialized) {
+      message = `Connecting to database... (${this.retryAttempts + 1}/${this.maxRetries})`;
     } else if (this.retryAttempts >= this.maxRetries) {
-      message = "Database unavailable - Using local storage only";
+      message = "Network unavailable - Running offline mode";
+      databaseConnected = false;
+    } else if (!supabase) {
+      message = "Database unavailable - Running offline";
       databaseConnected = false;
     } else {
       message = `Connected • ${this.submissions.length} submissions`;
