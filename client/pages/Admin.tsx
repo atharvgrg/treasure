@@ -92,7 +92,7 @@ export default function Admin() {
   };
 
   const exportData = () => {
-    const data = centralDataStore.exportData();
+    const data = productionDataStore.exportData();
     const blob = new Blob([data], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
