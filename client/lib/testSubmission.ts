@@ -42,7 +42,7 @@ export async function createTestSubmissions() {
       };
 
       try {
-        await realtimeDataStore.addSubmission(submission);
+        await netlifyDataStore.addSubmission(submission);
         console.log(`✅ Added test submission for ${submission.teamName}`);
       } catch (error) {
         console.error(
