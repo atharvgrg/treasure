@@ -92,7 +92,7 @@ export default function Admin() {
   };
 
   const exportData = () => {
-    const data = productionDataStore.exportData();
+    const data = postgresDataStore.exportData();
     const blob = new Blob([data], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -110,7 +110,7 @@ export default function Admin() {
         "Are you sure you want to clear all data? This cannot be undone!",
       )
     ) {
-      await productionDataStore.clearAllData();
+      await postgresDataStore.clearAllData();
     }
   };
 
@@ -118,12 +118,12 @@ export default function Admin() {
     setResetError("");
 
     if (resetPassword.trim() === "GDG-IET") {
-      await productionDataStore.clearAllData();
+      await postgresDataStore.clearAllData();
       setResetPassword("");
       setIsResetDialogOpen(false);
       // Show success message
       alert(
-        "🔥 All data has been securely wiped! Production database reset complete.",
+        "🔥 All data has been securely wiped! PostgreSQL database reset complete.",
       );
     } else {
       setResetError("Incorrect password. Access denied.");
