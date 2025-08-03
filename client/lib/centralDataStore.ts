@@ -43,102 +43,15 @@ class CentralDataStore {
   }
 
   private async ensureTableExists() {
-    if (!supabase) {
-      console.log("⚠️ Supabase client not available, skipping table check");
-      return;
-    }
-
-    try {
-      // First, try to query the table to see if it exists
-      const { data, error: queryError } = await supabase
-        .from("submissions")
-        .select("id")
-        .limit(1);
-
-      if (!queryError) {
-        console.log("✅ Table 'submissions' already exists");
-        return; // Table exists, we're good
-      }
-
-      console.log("📋 Table doesn't exist, attempting to create...");
-
-      // Table doesn't exist, try to create it using a simple insert operation
-      // This will fail but might trigger auto-creation in some Supabase setups
-      const testSubmission = {
-        id: "test-init-" + Date.now(),
-        team_name: "init_test",
-        level: 1,
-        difficulty: 1,
-        completed_levels: [1],
-        timestamp: Date.now(),
-      };
-
-      const { error: insertError } = await supabase
-        .from("submissions")
-        .insert(testSubmission);
-
-      if (!insertError) {
-        // If insert succeeded, delete the test record
-        await supabase.from("submissions").delete().eq("id", testSubmission.id);
-        console.log("✅ Table created successfully via insert");
-      } else {
-        if (insertError.message.includes('NetworkError') || insertError.message.includes('fetch')) {
-          throw new Error(`Network error: ${insertError.message}`);
-        }
-        console.log("⚠️ Could not auto-create table:", insertError.message);
-        // Table creation failed, but we'll continue anyway
-        // The table might need to be created manually in Supabase dashboard
-      }
-    } catch (error) {
-      if (error instanceof Error && (
-        error.message.includes('NetworkError') ||
-        error.message.includes('fetch') ||
-        error.name === 'NetworkError'
-      )) {
-        console.error("🌐 Network error during table check:", error.message);
-        throw error; // Re-throw network errors to trigger fallback
-      }
-      console.warn("⚠️ Table creation check failed:", error);
-      // Continue anyway - the table might exist but have permission issues
-    }
+    // In-memory store doesn't need table creation
+    console.log("✅ Using in-memory store - no table setup needed");
   }
 
   private async loadSubmissions() {
-    try {
-      const { data, error } = await supabase
-        .from("submissions")
-        .select("*")
-        .order("level", { ascending: false })
-        .order("timestamp", { ascending: true });
-
-      if (error) {
-        if (
-          error.message.includes("does not exist") ||
-          error.message.includes("relation") ||
-          error.message.includes("table")
-        ) {
-          console.log("📋 Table doesn't exist yet, starting with empty data");
-          this.submissions = [];
-          this.notifyListeners();
-          return;
-        }
-        throw new Error(`Failed to load submissions: ${error.message}`);
-      }
-
-      this.submissions = (data || []).map(this.mapFromSupabase);
-      this.notifyListeners();
-      console.log(
-        `📊 Loaded ${this.submissions.length} submissions from central database`,
-      );
-    } catch (error) {
-      console.warn(
-        "⚠️ Load submissions failed, starting with empty data:",
-        error,
-      );
-      this.submissions = [];
-      this.notifyListeners();
-      // Don't throw error - continue with empty state
-    }
+    // In-memory store starts with empty data
+    this.submissions = [];
+    this.notifyListeners();
+    console.log("📋 In-memory store ready - starting with empty data");
   }
 
   private setupRealtimeSubscription() {
