@@ -253,32 +253,12 @@ class CentralDataStore {
     databaseConnected: boolean;
     message: string;
   } {
-    let databaseConnected =
-      this.isInitialized && this.retryAttempts < this.maxRetries && supabase !== null;
-    let message = "";
-
-    if (supabaseError) {
-      message = "Database client error - Running offline";
-      databaseConnected = false;
-    } else if (!this.isInitialized) {
-      message = `Connecting to database... (${this.retryAttempts + 1}/${this.maxRetries})`;
-    } else if (this.retryAttempts >= this.maxRetries) {
-      message = "Network unavailable - Running offline mode";
-      databaseConnected = false;
-    } else if (!supabase) {
-      message = "Database unavailable - Running offline";
-      databaseConnected = false;
-    } else {
-      message = `Connected • ${this.submissions.length} submissions`;
-      databaseConnected = true;
-    }
-
     return {
       initialized: this.isInitialized,
       submissionCount: this.submissions.length,
       retryAttempts: this.retryAttempts,
-      databaseConnected,
-      message,
+      databaseConnected: true, // In-memory store is always "connected"
+      message: `In-memory store ready • ${this.submissions.length} submissions`,
     };
   }
 
