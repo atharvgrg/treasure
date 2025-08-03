@@ -39,7 +39,19 @@ export default function Index() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isTypingComplete, setIsTypingComplete] = useState(false);
-  const [dbStatus, setDbStatus] = useState<{initialized: boolean; submissionCount: number; retryAttempts: number}>({initialized: false, submissionCount: 0, retryAttempts: 0});
+  const [dbStatus, setDbStatus] = useState<{
+    initialized: boolean;
+    submissionCount: number;
+    retryAttempts: number;
+    databaseConnected: boolean;
+    message: string;
+  }>({
+    initialized: false,
+    submissionCount: 0,
+    retryAttempts: 0,
+    databaseConnected: false,
+    message: "Initializing..."
+  });
   const navigate = useNavigate();
   const { isInitialized } = useRealtimeStore();
 
