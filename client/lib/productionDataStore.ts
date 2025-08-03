@@ -32,7 +32,9 @@ class ProductionDataStore {
     console.log("📊 Designed for hundreds of concurrent teams");
 
     if (firebaseError) {
-      console.log("🔧 Firebase not configured, using high-performance local mode");
+      console.log(
+        "🔧 Firebase not configured, using high-performance local mode",
+      );
       this.initializeLocalMode();
       return;
     }
@@ -55,7 +57,10 @@ class ProductionDataStore {
       console.log("✅ Production Firebase store initialized successfully");
       console.log("🌐 Real-time multi-device synchronization active");
     } catch (error) {
-      console.error("❌ Firebase connection failed, switching to local mode:", error);
+      console.error(
+        "❌ Firebase connection failed, switching to local mode:",
+        error,
+      );
       this.initializeLocalMode();
     }
   }
@@ -138,7 +143,9 @@ class ProductionDataStore {
   }
 
   private initializeLocalMode() {
-    console.log("🔧 Local Mode Active - Perfect for development and single-session events");
+    console.log(
+      "🔧 Local Mode Active - Perfect for development and single-session events",
+    );
     console.log("📊 Real-time updates within browser session");
 
     // Load from localStorage if available
@@ -159,7 +166,9 @@ class ProductionDataStore {
       if (data) {
         const parsed = JSON.parse(data);
         this.submissions = parsed.submissions || [];
-        console.log(`📋 Loaded ${this.submissions.length} submissions from local storage`);
+        console.log(
+          `📋 Loaded ${this.submissions.length} submissions from local storage`,
+        );
       } else {
         this.submissions = [];
         console.log("📋 Starting with empty submissions");
@@ -179,7 +188,10 @@ class ProductionDataStore {
         lastUpdated: Date.now(),
         source: "firebase-local-mode",
       };
-      localStorage.setItem("treasure_shell_firebase_demo", JSON.stringify(data));
+      localStorage.setItem(
+        "treasure_shell_firebase_demo",
+        JSON.stringify(data),
+      );
     } catch (error) {
       console.error("Error saving to localStorage:", error);
     }
@@ -189,7 +201,8 @@ class ProductionDataStore {
     // Simulate real-time updates by periodically checking localStorage
     // This allows multiple tabs to stay in sync in local mode
     setInterval(() => {
-      if (!database) { // Only in local mode
+      if (!database) {
+        // Only in local mode
         this.loadFromLocalStorage();
       }
     }, 2000);

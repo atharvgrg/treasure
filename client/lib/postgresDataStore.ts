@@ -11,8 +11,8 @@ class PostgreSQLDataStore {
   private maxReconnects = 5;
 
   // Public PostgreSQL database for demo (replace with your own for production)
-  private readonly API_BASE = 'https://treasure-shell-api.railway.app';
-  private readonly WS_URL = 'wss://treasure-shell-api.railway.app/ws';
+  private readonly API_BASE = "https://treasure-shell-api.railway.app";
+  private readonly WS_URL = "wss://treasure-shell-api.railway.app/ws";
 
   constructor() {
     this.initialize();
@@ -20,27 +20,28 @@ class PostgreSQLDataStore {
 
   private async initialize() {
     console.log("🚀 Initializing ULTRA-RELIABLE PostgreSQL Database");
-    console.log("📊 Real-time multi-device synchronization for hundreds of teams");
-    
+    console.log(
+      "📊 Real-time multi-device synchronization for hundreds of teams",
+    );
+
     try {
       // Test database connection
       await this.testConnection();
-      
+
       // Load existing data
       await this.loadSubmissions();
-      
+
       // Set up real-time WebSocket connection
       this.setupWebSocketConnection();
-      
+
       // Set up backup polling
       this.setupPolling();
-      
+
       this.isInitialized = true;
       this.isConnected = true;
-      
+
       console.log("✅ PostgreSQL database connected successfully");
       console.log("🌐 Real-time synchronization active across all devices");
-      
     } catch (error) {
       console.error("❌ Database connection failed:", error);
       // Try alternative connection methods
@@ -50,45 +51,49 @@ class PostgreSQLDataStore {
 
   private async testConnection(): Promise<void> {
     const response = await fetch(`${this.API_BASE}/health`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
     });
-    
+
     if (!response.ok) {
       throw new Error(`Database health check failed: ${response.status}`);
     }
-    
+
     const result = await response.json();
     console.log("💓 Database health:", result.status);
   }
 
   private async loadSubmissions(): Promise<void> {
     const response = await fetch(`${this.API_BASE}/api/submissions`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
     });
-    
+
     if (!response.ok) {
       throw new Error(`Failed to load submissions: ${response.status}`);
     }
-    
+
     const result = await response.json();
     this.submissions = result.data || [];
-    this.submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp);
-    
-    console.log(`📊 Loaded ${this.submissions.length} submissions from PostgreSQL`);
+    this.submissions.sort(
+      (a, b) => b.level - a.level || a.timestamp - b.timestamp,
+    );
+
+    console.log(
+      `📊 Loaded ${this.submissions.length} submissions from PostgreSQL`,
+    );
     this.notifyListeners();
   }
 
   private setupWebSocketConnection(): void {
     try {
       this.wsConnection = new WebSocket(this.WS_URL);
-      
+
       this.wsConnection.onopen = () => {
         console.log("🔌 WebSocket connected - Real-time updates active");
         this.reconnectAttempts = 0;
       };
-      
+
       this.wsConnection.onmessage = (event) => {
         try {
           const update = JSON.parse(event.data);
@@ -97,16 +102,15 @@ class PostgreSQLDataStore {
           console.warn("Invalid WebSocket message:", error);
         }
       };
-      
+
       this.wsConnection.onclose = () => {
         console.warn("🔌 WebSocket disconnected - attempting reconnect");
         this.reconnectWebSocket();
       };
-      
+
       this.wsConnection.onerror = (error) => {
         console.warn("🔌 WebSocket error:", error);
       };
-      
     } catch (error) {
       console.warn("WebSocket setup failed, using polling only:", error);
     }
@@ -116,23 +120,27 @@ class PostgreSQLDataStore {
     if (this.reconnectAttempts < this.maxReconnects) {
       this.reconnectAttempts++;
       setTimeout(() => {
-        console.log(`🔄 Reconnecting WebSocket (attempt ${this.reconnectAttempts})`);
+        console.log(
+          `🔄 Reconnecting WebSocket (attempt ${this.reconnectAttempts})`,
+        );
         this.setupWebSocketConnection();
       }, 2000 * this.reconnectAttempts);
     }
   }
 
   private handleRealtimeUpdate(update: any): void {
-    if (update.type === 'new_submission') {
+    if (update.type === "new_submission") {
       // Add new submission if not already exists
-      const exists = this.submissions.find(s => s.id === update.data.id);
+      const exists = this.submissions.find((s) => s.id === update.data.id);
       if (!exists) {
         this.submissions = [update.data, ...this.submissions];
-        this.submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp);
+        this.submissions.sort(
+          (a, b) => b.level - a.level || a.timestamp - b.timestamp,
+        );
         console.log("🔄 Real-time update: New submission received");
         this.notifyListeners();
       }
-    } else if (update.type === 'clear_all') {
+    } else if (update.type === "clear_all") {
       this.submissions = [];
       console.log("🗑️ Real-time update: All data cleared");
       this.notifyListeners();
@@ -152,14 +160,14 @@ class PostgreSQLDataStore {
 
   private async fallbackInitialization(): Promise<void> {
     console.log("🔧 Attempting fallback initialization methods");
-    
+
     // Try alternative API endpoints
     const fallbackEndpoints = [
-      'https://treasure-shell-backup.herokuapp.com',
-      'https://treasure-shell.vercel.app/api',
-      'https://treasure-shell.netlify.app/.netlify/functions'
+      "https://treasure-shell-backup.herokuapp.com",
+      "https://treasure-shell.vercel.app/api",
+      "https://treasure-shell.netlify.app/.netlify/functions",
     ];
-    
+
     for (const endpoint of fallbackEndpoints) {
       try {
         const response = await fetch(`${endpoint}/health`);
@@ -176,8 +184,10 @@ class PostgreSQLDataStore {
         console.log(`❌ Fallback ${endpoint} failed`);
       }
     }
-    
-    throw new Error("All database connections failed - check internet connectivity");
+
+    throw new Error(
+      "All database connections failed - check internet connectivity",
+    );
   }
 
   private notifyListeners(): void {
@@ -189,7 +199,9 @@ class PostgreSQLDataStore {
       throw new Error("Database not initialized. Cannot save submission.");
     }
 
-    console.log(`📝 Saving to PostgreSQL: ${submission.teamName} - Level ${submission.level}`);
+    console.log(
+      `📝 Saving to PostgreSQL: ${submission.teamName} - Level ${submission.level}`,
+    );
 
     // Check for duplicates locally first
     const existingSubmission = this.submissions.find(
@@ -206,9 +218,9 @@ class PostgreSQLDataStore {
 
     try {
       const response = await fetch(`${this.API_BASE}/api/submissions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submission)
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submission),
       });
 
       if (!response.ok) {
@@ -216,22 +228,28 @@ class PostgreSQLDataStore {
       }
 
       const result = await response.json();
-      
+
       if (!result.success) {
-        throw new Error(result.error || 'Failed to save submission');
+        throw new Error(result.error || "Failed to save submission");
       }
 
       // Update local state immediately
-      this.submissions = [result.data, ...this.submissions.filter(s => s.id !== result.data.id)];
-      this.submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp);
+      this.submissions = [
+        result.data,
+        ...this.submissions.filter((s) => s.id !== result.data.id),
+      ];
+      this.submissions.sort(
+        (a, b) => b.level - a.level || a.timestamp - b.timestamp,
+      );
       this.notifyListeners();
 
       console.log("✅ Submission saved to PostgreSQL successfully");
       console.log("🌐 Broadcasting to all connected devices");
-
     } catch (error) {
       console.error("❌ Failed to save submission:", error);
-      throw new Error(`Database error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -304,11 +322,11 @@ class PostgreSQLDataStore {
 
     try {
       const response = await fetch(`${this.API_BASE}/api/submissions`, {
-        method: 'DELETE',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer GDG-IET' // Admin password
-        }
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer GDG-IET", // Admin password
+        },
       });
 
       if (!response.ok) {
@@ -316,9 +334,9 @@ class PostgreSQLDataStore {
       }
 
       const result = await response.json();
-      
+
       if (!result.success) {
-        throw new Error(result.error || 'Failed to clear data');
+        throw new Error(result.error || "Failed to clear data");
       }
 
       this.submissions = [];
@@ -326,10 +344,11 @@ class PostgreSQLDataStore {
 
       console.log("✅ All data cleared from PostgreSQL");
       console.log("🌐 Clear operation broadcast to all devices");
-
     } catch (error) {
       console.error("❌ Failed to clear data:", error);
-      throw new Error(`Database error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -341,7 +360,7 @@ class PostgreSQLDataStore {
         lastUpdated: Date.now(),
         source: "postgresql-realtime-database",
         totalSubmissions: this.submissions.length,
-        connectionStatus: this.isConnected ? "connected" : "disconnected"
+        connectionStatus: this.isConnected ? "connected" : "disconnected",
       },
       null,
       2,
@@ -359,15 +378,15 @@ class PostgreSQLDataStore {
     await this.loadSubmissions();
   }
 
-  getStatus(): { 
-    initialized: boolean; 
-    submissionCount: number; 
+  getStatus(): {
+    initialized: boolean;
+    submissionCount: number;
     retryAttempts: number;
     databaseConnected: boolean;
     message: string;
   } {
     let message = "";
-    
+
     if (!this.isInitialized) {
       message = "🚀 Connecting to PostgreSQL database...";
     } else if (!this.isConnected) {
@@ -387,17 +406,17 @@ class PostgreSQLDataStore {
 
   destroy(): void {
     console.log("🧹 Cleaning up PostgreSQL connections");
-    
+
     if (this.wsConnection) {
       this.wsConnection.close();
       this.wsConnection = null;
     }
-    
+
     if (this.pollInterval) {
       clearInterval(this.pollInterval);
       this.pollInterval = null;
     }
-    
+
     this.listeners.clear();
     console.log("✅ PostgreSQL cleanup complete");
   }
@@ -411,7 +430,9 @@ if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", () => {
     postgresDataStore.destroy();
   });
-  
+
   console.log("🔥 PostgreSQL Realtime Database ready for high-stakes event");
-  console.log("📊 Ultra-reliable • Scales to hundreds of teams • Zero downtime");
+  console.log(
+    "📊 Ultra-reliable • Scales to hundreds of teams • Zero downtime",
+  );
 }

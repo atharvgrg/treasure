@@ -5,7 +5,8 @@ import { getDatabase, connectDatabaseEmulator } from "firebase/database";
 const firebaseConfig = {
   apiKey: "AIzaSyDOCAbC123DEF456GHI789JKL012MNO345",
   authDomain: "treasure-shell-demo.firebaseapp.com",
-  databaseURL: "https://treasure-shell-demo-default-rtdb.europe-west1.firebasedatabase.app",
+  databaseURL:
+    "https://treasure-shell-demo-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "treasure-shell-demo",
   storageBucket: "treasure-shell-demo.appspot.com",
   messagingSenderId: "123456789012",
