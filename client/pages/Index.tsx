@@ -40,6 +40,7 @@ export default function Index() {
   const [success, setSuccess] = useState("");
   const [isTypingComplete, setIsTypingComplete] = useState(false);
   const navigate = useNavigate();
+  const { isInitialized } = useRealtimeStore();
 
   useEffect(() => {
     const timer = setTimeout(() => setIsTypingComplete(true), 4000);
