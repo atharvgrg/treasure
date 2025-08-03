@@ -230,23 +230,35 @@ class CentralDataStore {
   }
 
   private setupRealtimeSubscription() {
-    supabase
-      .channel("submissions_channel")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "submissions",
-        },
-        (payload) => {
-          console.log("🔄 Real-time update received:", payload);
-          this.handleRealtimeUpdate(payload);
-        },
-      )
-      .subscribe((status) => {
-        console.log(`🔌 Real-time subscription status: ${status}`);
-      });
+    if (!supabase) {
+      console.log("⚠️ Supabase not available, skipping real-time subscription");
+      return;
+    }
+
+    try {
+      supabase
+        .channel("submissions_channel")
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "submissions",
+          },
+          (payload) => {
+            console.log("🔄 Real-time update received:", payload);
+            this.handleRealtimeUpdate(payload);
+          },
+        )
+        .subscribe((status) => {
+          console.log(`🔌 Real-time subscription status: ${status}`);
+          if (status === 'SUBSCRIPTION_ERROR') {
+            console.warn("⚠️ Real-time subscription failed - using polling only");
+          }
+        });
+    } catch (error) {
+      console.warn("⚠️ Failed to setup real-time subscription:", error);
+    }
   }
 
   private setupPolling() {
