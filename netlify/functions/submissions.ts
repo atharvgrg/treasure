@@ -1,5 +1,5 @@
-import { Handler } from '@netlify/functions';
-import type { Submission } from '../../shared/gameConfig';
+import { Handler } from "@netlify/functions";
+import type { Submission } from "../../shared/gameConfig";
 
 // In-memory storage for the event (persists during function lifetime)
 let submissions: Submission[] = [];
@@ -9,68 +9,76 @@ let lastUpdate = Date.now();
 function validateSubmission(submission: any): submission is Submission {
   return (
     submission &&
-    typeof submission.id === 'string' &&
-    typeof submission.teamName === 'string' &&
-    typeof submission.level === 'number' &&
-    typeof submission.difficulty === 'number' &&
-    typeof submission.timestamp === 'number' &&
+    typeof submission.id === "string" &&
+    typeof submission.teamName === "string" &&
+    typeof submission.level === "number" &&
+    typeof submission.difficulty === "number" &&
+    typeof submission.timestamp === "number" &&
     Array.isArray(submission.completedLevels) &&
-    submission.level >= 1 && submission.level <= 10 &&
-    submission.difficulty >= 1 && submission.difficulty <= 5 &&
+    submission.level >= 1 &&
+    submission.level <= 10 &&
+    submission.difficulty >= 1 &&
+    submission.difficulty <= 5 &&
     submission.teamName.trim().length > 0
   );
 }
 
 function sanitizeTeamName(teamName: string): string {
-  return teamName.trim().replace(/[<>"'&]/g, '');
+  return teamName.trim().replace(/[<>"'&]/g, "");
 }
 
 function checkForDuplicate(teamName: string, level: number): boolean {
   return submissions.some(
-    s => s.teamName.toLowerCase() === teamName.toLowerCase() && s.level === level
+    (s) =>
+      s.teamName.toLowerCase() === teamName.toLowerCase() && s.level === level,
   );
 }
 
 export const handler: Handler = async (event, context) => {
   // CORS headers
   const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-    'Content-Type': 'application/json',
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+    "Content-Type": "application/json",
   };
 
   // Handle preflight requests
-  if (event.httpMethod === 'OPTIONS') {
+  if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
       headers,
-      body: '',
+      body: "",
     };
   }
 
   try {
     switch (event.httpMethod) {
-      case 'GET':
+      case "GET":
         // Get all submissions
         return {
           statusCode: 200,
           headers,
           body: JSON.stringify({
             success: true,
-            data: submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp),
+            data: submissions.sort(
+              (a, b) => b.level - a.level || a.timestamp - b.timestamp,
+            ),
             lastUpdate,
             total: submissions.length,
           }),
         };
 
-      case 'POST':
+      case "POST":
         // Add new submission
         if (!event.body) {
           return {
             statusCode: 400,
             headers,
-            body: JSON.stringify({ success: false, error: 'Request body is required' }),
+            body: JSON.stringify({
+              success: false,
+              error: "Request body is required",
+            }),
           };
         }
 
@@ -81,7 +89,10 @@ export const handler: Handler = async (event, context) => {
           return {
             statusCode: 400,
             headers,
-            body: JSON.stringify({ success: false, error: 'Invalid submission data' }),
+            body: JSON.stringify({
+              success: false,
+              error: "Invalid submission data",
+            }),
           };
         }
 
@@ -90,7 +101,10 @@ export const handler: Handler = async (event, context) => {
           return {
             statusCode: 400,
             headers,
-            body: JSON.stringify({ success: false, error: 'Team name must be at least 2 characters long' }),
+            body: JSON.stringify({
+              success: false,
+              error: "Team name must be at least 2 characters long",
+            }),
           };
         }
 
@@ -98,7 +112,10 @@ export const handler: Handler = async (event, context) => {
           return {
             statusCode: 400,
             headers,
-            body: JSON.stringify({ success: false, error: 'Team name must be 50 characters or less' }),
+            body: JSON.stringify({
+              success: false,
+              error: "Team name must be 50 characters or less",
+            }),
           };
         }
 
@@ -108,7 +125,10 @@ export const handler: Handler = async (event, context) => {
           return {
             statusCode: 400,
             headers,
-            body: JSON.stringify({ success: false, error: 'Team name contains invalid characters' }),
+            body: JSON.stringify({
+              success: false,
+              error: "Team name contains invalid characters",
+            }),
           };
         }
 
@@ -117,9 +137,9 @@ export const handler: Handler = async (event, context) => {
           return {
             statusCode: 409,
             headers,
-            body: JSON.stringify({ 
-              success: false, 
-              error: `Team "${sanitizedTeamName}" has already submitted for Level ${newSubmission.level}` 
+            body: JSON.stringify({
+              success: false,
+              error: `Team "${sanitizedTeamName}" has already submitted for Level ${newSubmission.level}`,
             }),
           };
         }
@@ -140,19 +160,22 @@ export const handler: Handler = async (event, context) => {
           body: JSON.stringify({
             success: true,
             data: submission,
-            message: 'Submission added successfully',
+            message: "Submission added successfully",
           }),
         };
 
-      case 'DELETE':
+      case "DELETE":
         // Clear all submissions (admin function)
         const { password } = event.queryStringParameters || {};
-        
-        if (password !== 'GDG-IET') {
+
+        if (password !== "GDG-IET") {
           return {
             statusCode: 401,
             headers,
-            body: JSON.stringify({ success: false, error: 'Invalid admin password' }),
+            body: JSON.stringify({
+              success: false,
+              error: "Invalid admin password",
+            }),
           };
         }
 
@@ -164,7 +187,7 @@ export const handler: Handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             success: true,
-            message: 'All submissions cleared successfully',
+            message: "All submissions cleared successfully",
           }),
         };
 
@@ -172,17 +195,17 @@ export const handler: Handler = async (event, context) => {
         return {
           statusCode: 405,
           headers,
-          body: JSON.stringify({ success: false, error: 'Method not allowed' }),
+          body: JSON.stringify({ success: false, error: "Method not allowed" }),
         };
     }
   } catch (error) {
-    console.error('Error in submissions function:', error);
+    console.error("Error in submissions function:", error);
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({
         success: false,
-        error: 'Internal server error',
+        error: "Internal server error",
       }),
     };
   }
