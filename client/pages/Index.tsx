@@ -39,8 +39,22 @@ export default function Index() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isTypingComplete, setIsTypingComplete] = useState(false);
+  const [isDevelopmentMode, setIsDevelopmentMode] = useState(false);
   const navigate = useNavigate();
   const { isInitialized } = useRealtimeStore();
+
+  // Check if we're in development mode
+  useEffect(() => {
+    const checkApiAvailability = async () => {
+      try {
+        const response = await fetch("/api/health");
+        setIsDevelopmentMode(!response.ok);
+      } catch {
+        setIsDevelopmentMode(true);
+      }
+    };
+    checkApiAvailability();
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsTypingComplete(true), 4000);
