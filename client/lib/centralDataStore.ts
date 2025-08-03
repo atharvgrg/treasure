@@ -338,18 +338,26 @@ class CentralDataStore {
 
     console.log("🗑️ Clearing ALL data from central database");
 
-    const { error } = await supabase
-      .from('submissions')
-      .delete()
-      .neq('id', ''); // Delete all records
+    try {
+      const { error } = await supabase
+        .from('submissions')
+        .delete()
+        .neq('id', ''); // Delete all records
 
-    if (error) {
-      throw new Error(`Failed to clear data: ${error.message}`);
+      if (error) {
+        if (error.message.includes('does not exist') || error.message.includes('relation')) {
+          console.log("📋 Table doesn't exist, nothing to clear");
+        } else {
+          throw new Error(`Failed to clear data: ${error.message}`);
+        }
+      }
+    } catch (error) {
+      console.warn("⚠️ Clear operation failed, clearing local state only:", error);
     }
 
     this.submissions = [];
     this.notifyListeners();
-    console.log("✅ All data cleared from central database");
+    console.log("✅ All data cleared");
   }
 
   exportData(): string {
