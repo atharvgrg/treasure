@@ -386,12 +386,12 @@ export default function Index() {
             </Card>
           </div>
 
-          {/* Database Status */}
+          {/* Production Database Status */}
           <Card
             className={`mt-8 glow-border bg-card/80 backdrop-blur border-2 ${
               dbStatus.databaseConnected
                 ? "border-cyber-green/50"
-                : "border-cyber-blue/50"
+                : "border-cyber-red/50"
             }`}
           >
             <CardContent className="pt-6">
@@ -400,32 +400,30 @@ export default function Index() {
                   className={`text-xl font-semibold matrix-text glow-text flex items-center justify-center gap-2 ${
                     dbStatus.databaseConnected
                       ? "text-cyber-green"
-                      : "text-cyber-blue"
+                      : "text-cyber-red"
                   }`}
                 >
                   <Terminal className="w-6 h-6" />
-                  {dbStatus.databaseConnected ? "🌐" : "🔄"} Database Status
+                  🔥 Production Firebase Database
                 </h3>
                 <div className="space-y-2">
                   <p
                     className={`text-sm matrix-text leading-relaxed ${
                       dbStatus.databaseConnected
                         ? "text-cyber-green"
-                        : "text-cyber-blue"
+                        : "text-cyber-red"
                     }`}
                   >
-                    {dbStatus.databaseConnected ? "✅" : "⚠️"}{" "}
                     {dbStatus.message}
                   </p>
-                  {!dbStatus.databaseConnected && dbStatus.initialized && (
-                    <p className="text-xs text-cyber-blue/60 matrix-text">
-                      Submissions saved locally - see SUPABASE_SETUP.md for
-                      database setup
+                  {dbStatus.databaseConnected && (
+                    <p className="text-xs text-cyber-green/60 matrix-text">
+                      🌐 Real-time sync active • Scales to hundreds of teams
                     </p>
                   )}
-                  {!dbStatus.initialized && (
-                    <p className="text-xs text-cyber-blue/60 matrix-text">
-                      Multi-device sync will activate once database connects
+                  {!dbStatus.databaseConnected && (
+                    <p className="text-xs text-cyber-red/60 matrix-text">
+                      🚨 Check internet connection - Production database required for event!
                     </p>
                   )}
                 </div>
