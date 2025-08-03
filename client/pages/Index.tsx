@@ -374,8 +374,9 @@ export default function Index() {
                     🔧 Development Mode
                   </h3>
                   <p className="text-sm text-cyber-blue/80 matrix-text leading-relaxed">
-                    API functions not available - using localStorage for data storage.
-                    Deploy to Netlify for full multi-device functionality.
+                    API functions not available - using localStorage for data
+                    storage. Deploy to Netlify for full multi-device
+                    functionality.
                   </p>
                 </div>
               </CardContent>
