@@ -338,34 +338,105 @@ export default function Admin() {
           <TabsContent value="admin">
             <Card className="glow-border bg-card/90 backdrop-blur">
               <CardHeader>
-                <CardTitle className="text-cyber-red matrix-text">⚠️ Admin Tools</CardTitle>
+                <CardTitle className="text-cyber-red matrix-text flex items-center gap-2">
+                  <Lock className="w-6 h-6" />
+                  ⚠️ Admin Tools
+                </CardTitle>
                 <CardDescription>Use these tools carefully. All actions are permanent.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6">
                 <div className="grid gap-4 md:grid-cols-2">
                   <Button
                     onClick={exportData}
-                    className="glow-border matrix-text"
+                    className="glow-border matrix-text bg-cyber-blue/10 border-cyber-blue hover:bg-cyber-blue/20"
                     variant="outline"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Export All Data
                   </Button>
-                  
-                  <Button
-                    onClick={clearData}
-                    className="glow-border matrix-text border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                    variant="outline"
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Clear All Data
-                  </Button>
+
+                  <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        className="glow-border matrix-text border-cyber-red text-cyber-red hover:bg-cyber-red/20 bg-cyber-red/10"
+                        variant="outline"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Secure Reset
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="glow-border bg-card/95 backdrop-blur-xl border-2 border-cyber-red/50">
+                      <DialogHeader>
+                        <DialogTitle className="text-cyber-red matrix-text flex items-center gap-2">
+                          <Shield className="w-6 h-6" />
+                          🔐 Secure Database Reset
+                        </DialogTitle>
+                        <DialogDescription className="text-muted-foreground matrix-text">
+                          This will permanently delete all submission data. Enter the admin password to continue.
+                        </DialogDescription>
+                      </DialogHeader>
+
+                      <div className="space-y-4 pt-4">
+                        {resetError && (
+                          <Alert className="border-cyber-red/50 bg-cyber-red/10">
+                            <AlertTriangle className="w-4 h-4" />
+                            <AlertDescription className="text-cyber-red">
+                              {resetError}
+                            </AlertDescription>
+                          </Alert>
+                        )}
+
+                        <div className="space-y-2">
+                          <Label htmlFor="resetPassword" className="text-foreground matrix-text">
+                            Admin Password
+                          </Label>
+                          <Input
+                            id="resetPassword"
+                            type="password"
+                            value={resetPassword}
+                            onChange={(e) => setResetPassword(e.target.value)}
+                            placeholder="Enter admin password"
+                            className="glow-border matrix-text bg-input/50 border-cyber-red/30"
+                            onKeyDown={(e) => e.key === 'Enter' && handleSecureReset()}
+                          />
+                        </div>
+
+                        <div className="flex gap-3 pt-2">
+                          <Button
+                            onClick={handleSecureReset}
+                            className="flex-1 glow-border matrix-text bg-cyber-red hover:bg-cyber-red/90 text-white"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Reset Database
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setIsResetDialogOpen(false);
+                              setResetPassword("");
+                              setResetError("");
+                            }}
+                            variant="outline"
+                            className="flex-1 glow-border matrix-text"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
 
                 <Alert className="border-cyber-blue/50 bg-cyber-blue/10">
                   <Monitor className="w-4 h-4" />
-                  <AlertDescription className="text-cyber-blue">
+                  <AlertDescription className="text-cyber-blue matrix-text">
                     This panel updates automatically every 5 seconds. Keep this open on the projector for live updates during the event.
+                  </AlertDescription>
+                </Alert>
+
+                <Alert className="border-cyber-red/50 bg-cyber-red/10">
+                  <Lock className="w-4 h-4" />
+                  <AlertDescription className="text-cyber-red matrix-text">
+                    <strong>Secure Reset:</strong> Requires admin password "GDG-IET" to permanently wipe all submission data. Use with extreme caution during the event.
                   </AlertDescription>
                 </Alert>
               </CardContent>
