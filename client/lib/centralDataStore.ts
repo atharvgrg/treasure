@@ -393,11 +393,32 @@ class CentralDataStore {
   }
 
   // Get connection status
-  getStatus(): { initialized: boolean; submissionCount: number; retryAttempts: number } {
+  getStatus(): {
+    initialized: boolean;
+    submissionCount: number;
+    retryAttempts: number;
+    databaseConnected: boolean;
+    message: string;
+  } {
+    let databaseConnected = this.isInitialized && this.retryAttempts < this.maxRetries;
+    let message = "";
+
+    if (!this.isInitialized) {
+      message = `Initializing... (Attempt ${this.retryAttempts + 1}/${this.maxRetries})`;
+    } else if (this.retryAttempts >= this.maxRetries) {
+      message = "Database unavailable - Using local storage only";
+      databaseConnected = false;
+    } else {
+      message = `Connected • ${this.submissions.length} submissions`;
+      databaseConnected = true;
+    }
+
     return {
       initialized: this.isInitialized,
       submissionCount: this.submissions.length,
-      retryAttempts: this.retryAttempts
+      retryAttempts: this.retryAttempts,
+      databaseConnected,
+      message
     };
   }
 
