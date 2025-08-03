@@ -60,16 +60,18 @@ export function createTestSubmissions() {
   }
 }
 
-// Make it available globally for testing
-(window as any).createTestSubmissions = createTestSubmissions;
-(window as any).treasureShellData = {
-  dataStore,
-  createTestSubmissions,
-  getSubmissions: () => dataStore.getSubmissions(),
-  getLeaderboard: () => dataStore.getLeaderboard(),
-  clearData: () => dataStore.clearAllData(),
-};
+// Make it available globally for testing in development only
+if (typeof window !== 'undefined' && import.meta.env.DEV) {
+  (window as any).createTestSubmissions = createTestSubmissions;
+  (window as any).treasureShellData = {
+    dataStore,
+    createTestSubmissions,
+    getSubmissions: () => dataStore.getSubmissions(),
+    getLeaderboard: () => dataStore.getLeaderboard(),
+    clearData: () => dataStore.clearAllData(),
+  };
 
-console.log(
-  "🧪 Test utilities loaded. Use window.createTestSubmissions() to create test data.",
-);
+  console.log(
+    "🧪 Test utilities loaded. Use window.createTestSubmissions() to create test data.",
+  );
+}
