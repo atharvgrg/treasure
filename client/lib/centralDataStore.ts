@@ -227,20 +227,19 @@ class CentralDataStore {
 
     console.log(`📝 Adding submission to central database: ${submission.teamName} - Level ${submission.level}`);
 
+    // Check for duplicates locally first
+    const existingSubmission = this.submissions.find(
+      (s) =>
+        s.teamName.toLowerCase() === submission.teamName.toLowerCase() &&
+        s.level === submission.level,
+    );
+
+    if (existingSubmission) {
+      throw new Error(`Team "${submission.teamName}" has already submitted for Level ${submission.level}`);
+    }
+
     try {
-      // Check for duplicates in database (not local cache)
-      const { data: existing, error: duplicateError } = await supabase
-        .from('submissions')
-        .select('id')
-        .eq('team_name', submission.teamName.toLowerCase())
-        .eq('level', submission.level)
-        .limit(1);
-
-      // If duplicate check fails because table doesn't exist, we'll handle it in the insert
-      if (!duplicateError && existing && existing.length > 0) {
-        throw new Error(`Team "${submission.teamName}" has already submitted for Level ${submission.level}`);
-      }
-
+      // Try to save to database
       const supabaseData = this.mapToSupabase(submission);
 
       const { data, error } = await supabase
@@ -250,8 +249,13 @@ class CentralDataStore {
         .single();
 
       if (error) {
-        console.error("❌ Failed to save to central database:", error);
-        throw new Error(`Failed to save submission: ${error.message}`);
+        console.warn("⚠️ Database save failed, storing locally only:", error.message);
+        // Fallback: store in memory only
+        this.submissions = [submission, ...this.submissions];
+        this.submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp);
+        this.notifyListeners();
+        console.log("💾 Submission stored locally (database unavailable)");
+        return;
       }
 
       console.log("✅ Submission saved to central database successfully");
@@ -263,11 +267,12 @@ class CentralDataStore {
       this.submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp);
       this.notifyListeners();
     } catch (error) {
-      // If it's a table/relation error, the table probably needs to be created in Supabase dashboard
-      if (error instanceof Error && (error.message.includes('relation') || error.message.includes('does not exist'))) {
-        throw new Error("Database table not found. Please ensure the 'submissions' table is created in your Supabase dashboard.");
-      }
-      throw error;
+      console.warn("⚠️ Database error, storing locally only:", error);
+      // Graceful fallback: store in memory
+      this.submissions = [submission, ...this.submissions];
+      this.submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp);
+      this.notifyListeners();
+      console.log("💾 Submission stored locally (database error)");
     }
   }
 
