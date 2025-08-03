@@ -65,49 +65,8 @@ class CentralDataStore {
   }
 
   private handleRealtimeUpdate(payload: any) {
-    if (payload.eventType === "INSERT") {
-      const newSubmission = this.mapFromSupabase(payload.new);
-      this.submissions = [
-        newSubmission,
-        ...this.submissions.filter((s) => s.id !== newSubmission.id),
-      ];
-      this.submissions.sort(
-        (a, b) => b.level - a.level || a.timestamp - b.timestamp,
-      );
-    } else if (payload.eventType === "DELETE") {
-      this.submissions = this.submissions.filter(
-        (s) => s.id !== payload.old.id,
-      );
-    } else if (payload.eventType === "UPDATE") {
-      const updatedSubmission = this.mapFromSupabase(payload.new);
-      this.submissions = this.submissions.map((s) =>
-        s.id === updatedSubmission.id ? updatedSubmission : s,
-      );
-    }
-
-    this.notifyListeners();
-  }
-
-  private mapFromSupabase(data: SupabaseSubmission): Submission {
-    return {
-      id: data.id,
-      teamName: data.team_name,
-      level: data.level,
-      difficulty: data.difficulty,
-      completedLevels: data.completed_levels,
-      timestamp: data.timestamp,
-    };
-  }
-
-  private mapToSupabase(submission: Submission): SupabaseSubmission {
-    return {
-      id: submission.id,
-      team_name: submission.teamName,
-      level: submission.level,
-      difficulty: submission.difficulty,
-      completed_levels: submission.completedLevels,
-      timestamp: submission.timestamp,
-    };
+    // In-memory store doesn't need real-time updates from external source
+    console.log("📡 In-memory store - real-time updates handled locally");
   }
 
   private notifyListeners(): void {
