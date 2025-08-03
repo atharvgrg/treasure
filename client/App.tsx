@@ -11,6 +11,11 @@ import Index from "./pages/Index";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
+// Import test utilities in development
+if (import.meta.env.DEV) {
+  import("./lib/testSubmission").catch(console.error);
+}
+
 const queryClient = new QueryClient();
 
 const AppContent = () => (
