@@ -31,32 +31,39 @@ class CentralDataStore {
 
   private async initialize() {
     console.log("🚀 Initializing CENTRAL database store (NO local storage)");
-    
+
     while (this.retryAttempts < this.maxRetries && !this.isInitialized) {
       try {
         // Create the table if it doesn't exist
         await this.ensureTableExists();
-        
+
         // Load existing data from central database
         await this.loadSubmissions();
-        
+
         // Set up real-time updates
         this.setupRealtimeSubscription();
-        
+
         // Set up polling as backup
         this.setupPolling();
-        
+
         this.isInitialized = true;
         console.log("✅ Central database store initialized successfully");
         break;
       } catch (error) {
         this.retryAttempts++;
         console.error(`❌ Initialization attempt ${this.retryAttempts} failed:`, error);
-        
+
         if (this.retryAttempts >= this.maxRetries) {
-          throw new Error(`Failed to initialize database after ${this.maxRetries} attempts. Last error: ${error}`);
+          console.error(`❌ Failed to initialize database after ${this.maxRetries} attempts.`);
+          console.error("🔧 Please ensure the Supabase database is properly configured.");
+
+          // Initialize with empty state as fallback
+          this.submissions = [];
+          this.isInitialized = true;
+          console.log("⚠️ Initialized with empty state - submissions will not persist");
+          break;
         }
-        
+
         // Wait before retrying
         await new Promise(resolve => setTimeout(resolve, 2000 * this.retryAttempts));
       }
