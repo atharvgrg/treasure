@@ -200,16 +200,8 @@ class ProductionDataStore {
   }
 
   async addSubmission(submission: Submission): Promise<void> {
-    if (!this.isInitialized || !database) {
-      throw new Error(
-        "Production database not available! Cannot save submission for event.",
-      );
-    }
-
-    if (!this.isConnected) {
-      throw new Error(
-        "No internet connection! Cannot save submission to production database.",
-      );
+    if (!this.isInitialized) {
+      throw new Error("Store not initialized. Cannot save submission.");
     }
 
     console.log(
