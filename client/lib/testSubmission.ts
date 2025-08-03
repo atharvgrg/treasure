@@ -64,11 +64,11 @@ export async function createTestSubmissions() {
 if (typeof window !== "undefined" && import.meta.env.DEV) {
   (window as any).createTestSubmissions = createTestSubmissions;
   (window as any).treasureShellData = {
-    realtimeDataStore,
+    netlifyDataStore,
     createTestSubmissions,
-    getSubmissions: () => realtimeDataStore.getSubmissions(),
-    getLeaderboard: () => realtimeDataStore.getLeaderboard(),
-    clearData: () => realtimeDataStore.clearAllData(),
+    getSubmissions: () => netlifyDataStore.getSubmissions(),
+    getLeaderboard: () => netlifyDataStore.getLeaderboard(),
+    clearData: () => netlifyDataStore.clearAllData(),
   };
 
   console.log(
