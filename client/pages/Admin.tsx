@@ -118,7 +118,7 @@ export default function Admin() {
     setResetError("");
 
     if (resetPassword.trim() === "GDG-IET") {
-      await realtimeDataStore.clearAllData();
+      await netlifyDataStore.clearAllData();
       setResetPassword("");
       setIsResetDialogOpen(false);
       // Show success message
