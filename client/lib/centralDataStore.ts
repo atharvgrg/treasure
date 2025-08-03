@@ -262,12 +262,25 @@ class CentralDataStore {
   }
 
   private setupPolling() {
+    if (!supabase) {
+      console.log("⚠️ Supabase not available, skipping polling");
+      return;
+    }
+
     // Backup polling every 10 seconds
     this.pollInterval = setInterval(async () => {
       try {
         await this.loadSubmissions();
       } catch (error) {
-        console.warn("Polling failed:", error);
+        if (error instanceof Error && (
+          error.message.includes('NetworkError') ||
+          error.message.includes('fetch') ||
+          error.name === 'NetworkError'
+        )) {
+          console.warn("🌐 Network error during polling - skipping");
+        } else {
+          console.warn("⚠️ Polling failed:", error);
+        }
       }
     }, 10000);
   }
