@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { netlifyDataStore } from "@/lib/netlifyDataStore";
+import { centralDataStore } from "@/lib/centralDataStore";
 
-export function useNetlifyStore() {
+export function useCentralStore() {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const initializeStore = async () => {
-      await netlifyDataStore.waitForInitialization();
+      await centralDataStore.waitForInitialization();
       setIsInitialized(true);
     };
 
@@ -15,9 +15,9 @@ export function useNetlifyStore() {
 
   return {
     isInitialized,
-    store: netlifyDataStore,
+    store: centralDataStore,
   };
 }
 
 // Keep backward compatibility
-export const useRealtimeStore = useNetlifyStore;
+export const useRealtimeStore = useCentralStore;
