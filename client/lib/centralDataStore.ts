@@ -23,8 +23,12 @@ class CentralDataStore {
     this.isInitialized = true;
     this.retryAttempts = 0; // Reset to show success
 
-    console.log("✅ In-memory store initialized successfully - ready for event!");
-    console.log("📝 All submissions will be stored in memory and persist during the session");
+    console.log(
+      "✅ In-memory store initialized successfully - ready for event!",
+    );
+    console.log(
+      "📝 All submissions will be stored in memory and persist during the session",
+    );
   }
 
   private async ensureTableExists() {
