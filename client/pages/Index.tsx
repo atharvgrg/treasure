@@ -107,8 +107,8 @@ export default function Index() {
         completedLevels: getCompletedLevels(level.level),
       };
 
-      // Save to real-time data store
-      await realtimeDataStore.addSubmission(submission);
+      // Save to Netlify data store
+      await netlifyDataStore.addSubmission(submission);
 
       setSuccess(
         `Success! ${level.name} completed. ${level.level === 10 ? "TREASURE FOUND! 🏆" : "Keep going!"}`,
