@@ -55,16 +55,16 @@ export default function Index() {
   const navigate = useNavigate();
   const { isInitialized } = useRealtimeStore();
 
-  // Monitor database status
+  // Monitor production database status
   useEffect(() => {
     const updateStatus = () => {
-      setDbStatus(centralDataStore.getStatus());
+      setDbStatus(productionDataStore.getStatus());
     };
 
     // Initial check
     updateStatus();
 
-    // Update every second while initializing
+    // Update every second for real-time status
     const interval = setInterval(updateStatus, 1000);
 
     return () => clearInterval(interval);
