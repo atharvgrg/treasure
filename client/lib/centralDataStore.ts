@@ -213,7 +213,7 @@ class CentralDataStore {
       this.pollInterval = null;
     }
     this.listeners.clear();
-    supabase.removeAllChannels();
+    console.log("🧹 In-memory store cleaned up");
   }
 }
 
