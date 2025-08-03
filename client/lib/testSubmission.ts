@@ -5,7 +5,7 @@ import { realtimeDataStore } from "./realtimeDataStore";
 import { generateSubmissionId } from "@shared/gameConfig";
 import type { Submission } from "@shared/gameConfig";
 
-export function createTestSubmissions() {
+export async function createTestSubmissions() {
   try {
     // Test submissions for different levels
     const testSubmissions: Partial<Submission>[] = [
