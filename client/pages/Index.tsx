@@ -55,10 +55,10 @@ export default function Index() {
   const navigate = useNavigate();
   const { isInitialized } = useRealtimeStore();
 
-  // Monitor production database status
+  // Monitor PostgreSQL database status
   useEffect(() => {
     const updateStatus = () => {
-      setDbStatus(productionDataStore.getStatus());
+      setDbStatus(postgresDataStore.getStatus());
     };
 
     // Initial check
