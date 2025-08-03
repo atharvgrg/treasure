@@ -30,7 +30,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { centralDataStore } from "@/lib/centralDataStore";
+import { productionDataStore } from "@/lib/productionDataStore";
 import { LEVELS, type Submission } from "@shared/gameConfig";
 import {
   Trophy,
