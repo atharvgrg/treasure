@@ -57,8 +57,8 @@ export default function Admin() {
   const navigate = useNavigate();
 
   const refreshData = () => {
-    setSubmissions(dataStore.getSubmissions());
-    setLeaderboard(dataStore.getLeaderboard());
+    setSubmissions(realtimeDataStore.getSubmissions());
+    setLeaderboard(realtimeDataStore.getLeaderboard());
     setLastUpdate(new Date());
   };
 
