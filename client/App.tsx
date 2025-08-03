@@ -1,5 +1,10 @@
 import "./global.css";
 
+// Import test utilities in development
+if (import.meta.env.DEV) {
+  import("./lib/testSubmission");
+}
+
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
