@@ -72,14 +72,19 @@ class NetlifyDataStore {
   }
 
   private setupPolling() {
-    // Poll every 3 seconds for real-time updates
+    // Poll every 5 seconds for real-time updates (only if API is available)
     this.pollInterval = setInterval(async () => {
       try {
-        await this.loadSubmissions();
+        // Try a quick health check first
+        const healthResponse = await fetch("/api/health", { method: "GET" });
+        if (healthResponse.ok) {
+          await this.loadSubmissions();
+        }
       } catch (error) {
-        console.error("Error polling for updates:", error);
+        // API not available, skip polling but don't log errors
+        // This is normal in development mode
       }
-    }, 3000);
+    }, 5000);
   }
 
   private notifyListeners(): void {
