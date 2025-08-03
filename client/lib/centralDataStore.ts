@@ -379,7 +379,7 @@ class CentralDataStore {
       this.pollInterval = null;
     }
     this.listeners.clear();
-    console.log("🧹 In-memory store cleaned up");
+    console.log("🧹 Multi-device store cleaned up");
   }
 }
 
