@@ -19,7 +19,7 @@ import {
   getCompletedLevels,
   type Submission,
 } from "@shared/gameConfig";
-import { realtimeDataStore } from "@/lib/realtimeDataStore";
+import { netlifyDataStore } from "@/lib/netlifyDataStore";
 import {
   Terminal,
   Star,
