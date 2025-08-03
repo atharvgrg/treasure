@@ -117,14 +117,22 @@ class CentralDataStore {
     }
   }
 
-  private setupRealtimeSubscription() {
-    console.log("📡 In-memory store - real-time updates handled via listeners");
-    // In-memory store uses direct listener notifications
-  }
-
   private setupPolling() {
-    console.log("🔄 In-memory store - no polling needed");
-    // In-memory store doesn't need polling
+    if (this.isDevelopmentMode) {
+      console.log("🔄 Development mode - no API polling needed");
+      return;
+    }
+
+    // Poll every 5 seconds for multi-device updates
+    this.pollInterval = setInterval(async () => {
+      try {
+        await this.loadFromAPI();
+      } catch (error) {
+        console.warn("⚠️ Polling failed:", error);
+      }
+    }, 5000);
+
+    console.log("🔄 Multi-device polling active (5 second intervals)");
   }
 
   private handleRealtimeUpdate(payload: any) {
