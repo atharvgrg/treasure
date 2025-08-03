@@ -30,7 +30,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { netlifyDataStore } from "@/lib/netlifyDataStore";
+import { centralDataStore } from "@/lib/centralDataStore";
 import { LEVELS, type Submission } from "@shared/gameConfig";
 import {
   Trophy,
@@ -59,8 +59,8 @@ export default function Admin() {
   const { isInitialized } = useRealtimeStore();
 
   const refreshData = () => {
-    setSubmissions(netlifyDataStore.getSubmissions());
-    setLeaderboard(netlifyDataStore.getLeaderboard());
+    setSubmissions(centralDataStore.getSubmissions());
+    setLeaderboard(centralDataStore.getLeaderboard());
     setLastUpdate(new Date());
   };
 
@@ -68,7 +68,7 @@ export default function Admin() {
     refreshData();
 
     // Set up real-time updates
-    const unsubscribe = netlifyDataStore.subscribe(refreshData);
+    const unsubscribe = centralDataStore.subscribe(refreshData);
 
     // Auto-refresh every 5 seconds
     const interval = setInterval(refreshData, 5000);
@@ -92,7 +92,7 @@ export default function Admin() {
   };
 
   const exportData = () => {
-    const data = netlifyDataStore.exportData();
+    const data = centralDataStore.exportData();
     const blob = new Blob([data], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -110,7 +110,7 @@ export default function Admin() {
         "Are you sure you want to clear all data? This cannot be undone!",
       )
     ) {
-      await netlifyDataStore.clearAllData();
+      await centralDataStore.clearAllData();
     }
   };
 
@@ -118,7 +118,7 @@ export default function Admin() {
     setResetError("");
 
     if (resetPassword.trim() === "GDG-IET") {
-      await netlifyDataStore.clearAllData();
+      await centralDataStore.clearAllData();
       setResetPassword("");
       setIsResetDialogOpen(false);
       // Show success message
