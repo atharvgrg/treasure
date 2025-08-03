@@ -105,40 +105,67 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen terminal-bg cyber-grid">
-      {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-terminal-bg via-terminal-bg/95 to-terminal-bg">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyber-green/5 via-transparent to-cyber-blue/5" />
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <Terminal className="w-12 h-12 text-cyber-green glow-text" />
-              <Shield className="w-8 h-8 text-cyber-blue" />
-            </div>
-            <h1 className={`text-4xl md:text-6xl font-bold text-cyber-green mb-4 ${
-              !isTypingComplete ? 'typing-animation' : 'glow-text'
-            }`}>
-              TREASURE IN THE SHELL
-            </h1>
-            <p className="text-xl md:text-2xl text-cyber-blue matrix-text mb-2">
-              💻 Crack the Clues • Break the Shell • Claim the Root 💎
-            </p>
-            <p className="text-lg text-muted-foreground matrix-text">
-              🧑‍💻 A Terminal Puzzle Challenge 🧠
-            </p>
-          </div>
+    <div className="min-h-screen terminal-bg cyber-grid relative overflow-hidden">
+      {/* Floating particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-cyber-green rounded-full animate-pulse opacity-60"></div>
+        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-cyber-blue rounded-full animate-ping"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-1 h-1 bg-cyber-purple rounded-full animate-pulse"></div>
+        <div className="absolute top-2/3 right-1/4 w-1 h-1 bg-cyber-green rounded-full animate-ping delay-1000"></div>
+      </div>
 
-          {/* Event Details */}
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
-            <Badge variant="outline" className="glow-border text-cyber-green">
-              🕐 02:00 PM
-            </Badge>
-            <Badge variant="outline" className="glow-border text-cyber-blue">
-              📅 06 August 2025
-            </Badge>
-            <Badge variant="outline" className="glow-border text-cyber-purple">
-              📍 301 M Block
-            </Badge>
+      {/* Header */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-cyber-green/10 via-transparent to-cyber-blue/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-terminal-bg/50 to-transparent" />
+
+        <div className="container mx-auto px-4 py-12 relative">
+          <div className="text-center mb-12">
+            {/* Logo/Icon Section */}
+            <div className="flex items-center justify-center gap-6 mb-8">
+              <div className="relative">
+                <Terminal className="w-16 h-16 text-cyber-green glow-text animate-pulse" />
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-cyber-green rounded-full opacity-20 animate-ping"></div>
+              </div>
+              <div className="h-12 w-0.5 bg-gradient-to-b from-cyber-green via-cyber-blue to-cyber-purple"></div>
+              <Shield className="w-12 h-12 text-cyber-blue glow-text animate-pulse delay-500" />
+            </div>
+
+            {/* Main Title */}
+            <div className="relative mb-8">
+              <h1 className={`text-5xl md:text-7xl lg:text-8xl font-bold text-cyber-green mb-6 ${
+                !isTypingComplete ? 'typing-animation' : 'glow-text'
+              }`}>
+                TREASURE IN THE SHELL
+              </h1>
+              <div className="absolute -inset-1 bg-gradient-to-r from-cyber-green via-cyber-blue to-cyber-purple opacity-20 blur-xl rounded-lg"></div>
+            </div>
+
+            {/* Subtitle */}
+            <div className="relative mb-6">
+              <p className="text-2xl md:text-3xl text-cyber-blue matrix-text mb-4 font-semibold">
+                💻 Crack the Clues • Break the Shell • Claim the Root 💎
+              </p>
+              <p className="text-xl text-cyber-green matrix-text font-medium">
+                🧑‍💻 A Terminal Puzzle Challenge 🧠
+              </p>
+            </div>
+
+            {/* Event Details */}
+            <div className="flex flex-wrap justify-center gap-6 mb-8">
+              <Badge variant="outline" className="glow-border text-cyber-green px-4 py-2 text-lg bg-cyber-green/10">
+                <span className="text-2xl mr-2">🕐</span>
+                02:00 PM
+              </Badge>
+              <Badge variant="outline" className="glow-border text-cyber-blue px-4 py-2 text-lg bg-cyber-blue/10">
+                <span className="text-2xl mr-2">📅</span>
+                06 August 2025
+              </Badge>
+              <Badge variant="outline" className="glow-border text-cyber-purple px-4 py-2 text-lg bg-cyber-purple/10">
+                <span className="text-2xl mr-2">📍</span>
+                301 M Block
+              </Badge>
+            </div>
           </div>
         </div>
       </div>
