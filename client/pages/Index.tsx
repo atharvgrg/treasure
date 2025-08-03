@@ -379,25 +379,31 @@ export default function Index() {
           </div>
 
           {/* Database Status */}
-          <Card className="mt-8 glow-border bg-card/80 backdrop-blur border-2 border-cyber-green/50">
+          <Card className={`mt-8 glow-border bg-card/80 backdrop-blur border-2 ${
+            dbStatus.databaseConnected ? 'border-cyber-green/50' : 'border-cyber-blue/50'
+          }`}>
             <CardContent className="pt-6">
               <div className="text-center space-y-3">
-                <h3 className="text-xl font-semibold text-cyber-green matrix-text glow-text flex items-center justify-center gap-2">
+                <h3 className={`text-xl font-semibold matrix-text glow-text flex items-center justify-center gap-2 ${
+                  dbStatus.databaseConnected ? 'text-cyber-green' : 'text-cyber-blue'
+                }`}>
                   <Terminal className="w-6 h-6" />
-                  🌐 Central Database Status
+                  {dbStatus.databaseConnected ? '🌐' : '🔄'} Database Status
                 </h3>
                 <div className="space-y-2">
                   <p className={`text-sm matrix-text leading-relaxed ${
-                    dbStatus.initialized ? 'text-cyber-green' : 'text-cyber-blue'
+                    dbStatus.databaseConnected ? 'text-cyber-green' : 'text-cyber-blue'
                   }`}>
-                    {dbStatus.initialized ?
-                      `✅ Connected • ${dbStatus.submissionCount} submissions stored` :
-                      `🔄 Initializing central database... (Attempt ${dbStatus.retryAttempts + 1}/5)`
-                    }
+                    {dbStatus.databaseConnected ? '✅' : '⚠️'} {dbStatus.message}
                   </p>
+                  {!dbStatus.databaseConnected && dbStatus.initialized && (
+                    <p className="text-xs text-cyber-blue/60 matrix-text">
+                      Submissions saved locally - see SUPABASE_SETUP.md for database setup
+                    </p>
+                  )}
                   {!dbStatus.initialized && (
                     <p className="text-xs text-cyber-blue/60 matrix-text">
-                      Multi-device synchronization will be available once connected
+                      Multi-device sync will activate once database connects
                     </p>
                   )}
                 </div>
