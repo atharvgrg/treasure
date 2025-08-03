@@ -116,14 +116,14 @@ class CentralDataStore {
 
   async addSubmission(submission: Submission): Promise<void> {
     if (!this.isInitialized) {
-      throw new Error("Database not initialized. Cannot save submission.");
+      throw new Error("Store not initialized. Cannot save submission.");
     }
 
     console.log(
-      `📝 Adding submission to central database: ${submission.teamName} - Level ${submission.level}`,
+      `📝 Adding submission to in-memory store: ${submission.teamName} - Level ${submission.level}`,
     );
 
-    // Check for duplicates locally first
+    // Check for duplicates
     const existingSubmission = this.submissions.find(
       (s) =>
         s.teamName.toLowerCase() === submission.teamName.toLowerCase() &&
@@ -136,54 +136,14 @@ class CentralDataStore {
       );
     }
 
-    try {
-      // Try to save to database
-      const supabaseData = this.mapToSupabase(submission);
+    // Add to in-memory store
+    this.submissions = [submission, ...this.submissions];
+    this.submissions.sort(
+      (a, b) => b.level - a.level || a.timestamp - b.timestamp,
+    );
+    this.notifyListeners();
 
-      const { data, error } = await supabase
-        .from("submissions")
-        .insert(supabaseData)
-        .select()
-        .single();
-
-      if (error) {
-        console.warn(
-          "⚠️ Database save failed, storing locally only:",
-          error.message,
-        );
-        // Fallback: store in memory only
-        this.submissions = [submission, ...this.submissions];
-        this.submissions.sort(
-          (a, b) => b.level - a.level || a.timestamp - b.timestamp,
-        );
-        this.notifyListeners();
-        console.log("💾 Submission stored locally (database unavailable)");
-        return;
-      }
-
-      console.log("✅ Submission saved to central database successfully");
-
-      // Real-time update will handle the local state update
-      // But also update immediately for better UX
-      const newSubmission = this.mapFromSupabase(data);
-      this.submissions = [
-        newSubmission,
-        ...this.submissions.filter((s) => s.id !== newSubmission.id),
-      ];
-      this.submissions.sort(
-        (a, b) => b.level - a.level || a.timestamp - b.timestamp,
-      );
-      this.notifyListeners();
-    } catch (error) {
-      console.warn("⚠️ Database error, storing locally only:", error);
-      // Graceful fallback: store in memory
-      this.submissions = [submission, ...this.submissions];
-      this.submissions.sort(
-        (a, b) => b.level - a.level || a.timestamp - b.timestamp,
-      );
-      this.notifyListeners();
-      console.log("💾 Submission stored locally (database error)");
-    }
+    console.log("✅ Submission stored in memory successfully");
   }
 
   getSubmissions(): Submission[] {
