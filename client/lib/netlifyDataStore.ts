@@ -223,6 +223,16 @@ class NetlifyDataStore {
         },
       });
 
+      // Check if response is successful and contains JSON
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("API not available - using local storage");
+      }
+
       const result = await response.json();
 
       if (!result.success) {
