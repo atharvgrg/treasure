@@ -61,7 +61,7 @@ export function createTestSubmissions() {
 }
 
 // Make it available globally for testing in development only
-if (typeof window !== 'undefined' && import.meta.env.DEV) {
+if (typeof window !== "undefined" && import.meta.env.DEV) {
   (window as any).createTestSubmissions = createTestSubmissions;
   (window as any).treasureShellData = {
     dataStore,

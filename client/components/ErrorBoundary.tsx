@@ -1,6 +1,12 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 
@@ -14,7 +20,10 @@ interface ErrorBoundaryProps {
   fallback?: React.ComponentType<{ error?: Error; retry: () => void }>;
 }
 
-export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
@@ -27,7 +36,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error for debugging but don't cause further issues during hot reload
     if (import.meta.env.DEV) {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
+      console.error("ErrorBoundary caught an error:", error, errorInfo);
     }
   }
 
@@ -39,10 +48,14 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     if (this.state.hasError) {
       if (this.props.fallback) {
         const FallbackComponent = this.props.fallback;
-        return <FallbackComponent error={this.state.error} retry={this.retry} />;
+        return (
+          <FallbackComponent error={this.state.error} retry={this.retry} />
+        );
       }
 
-      return <DefaultErrorFallback error={this.state.error} retry={this.retry} />;
+      return (
+        <DefaultErrorFallback error={this.state.error} retry={this.retry} />
+      );
     }
 
     return this.props.children;
@@ -54,9 +67,12 @@ interface ErrorFallbackProps {
   retry: () => void;
 }
 
-export const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({ error, retry }) => {
+export const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
+  error,
+  retry,
+}) => {
   const goHome = () => {
-    window.location.href = '/';
+    window.location.href = "/";
   };
 
   return (
@@ -75,19 +91,16 @@ export const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({ error, retr
           <Alert className="border-cyber-red/50 bg-cyber-red/10">
             <AlertTriangle className="w-4 h-4" />
             <AlertDescription className="text-cyber-red">
-              {error?.message || 'An unexpected error occurred'}
+              {error?.message || "An unexpected error occurred"}
             </AlertDescription>
           </Alert>
 
           <div className="space-y-2">
-            <Button
-              onClick={retry}
-              className="w-full glow-border matrix-text"
-            >
+            <Button onClick={retry} className="w-full glow-border matrix-text">
               <RefreshCw className="w-4 h-4 mr-2" />
               Retry Operation
             </Button>
-            
+
             <Button
               onClick={goHome}
               variant="outline"
