@@ -88,6 +88,20 @@ export default function Admin() {
     }
   };
 
+  const handleSecureReset = () => {
+    setResetError("");
+
+    if (resetPassword.trim() === "GDG-IET") {
+      dataStore.clearAllData();
+      setResetPassword("");
+      setIsResetDialogOpen(false);
+      // Show success message
+      alert("🔥 All data has been securely wiped! Database reset complete.");
+    } else {
+      setResetError("Incorrect password. Access denied.");
+    }
+  };
+
   const getStars = (difficulty: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <Star 
