@@ -18,7 +18,7 @@ import {
   getCompletedLevels,
   type Submission,
 } from "@shared/gameConfig";
-import { dataStore } from "@/lib/dataStore";
+import { realtimeDataStore } from "@/lib/realtimeDataStore";
 import {
   Terminal,
   Star,
