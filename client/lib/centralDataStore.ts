@@ -1,22 +1,7 @@
-import { createClient } from "@supabase/supabase-js";
 import { Submission } from "@shared/gameConfig";
 
-// DISABLED: External database causing NetworkError
-// Using reliable in-memory store for event
-console.log("🔧 Using in-memory store - external database disabled for reliability");
-
-let supabase: any = null;
-let supabaseError: string = "External database disabled for event reliability";
-
-interface SupabaseSubmission {
-  id: string;
-  team_name: string;
-  level: number;
-  difficulty: number;
-  completed_levels: number[];
-  timestamp: number;
-  created_at?: string;
-}
+// Reliable in-memory store for event
+console.log("🔧 Using in-memory store - optimized for event reliability");
 
 class CentralDataStore {
   private listeners: Set<() => void> = new Set();
