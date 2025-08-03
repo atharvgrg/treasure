@@ -31,7 +31,7 @@ export async function createTestSubmissions() {
       },
     ];
 
-    testSubmissions.forEach((sub, index) => {
+    for (const [index, sub] of testSubmissions.entries()) {
       const submission: Submission = {
         id: generateSubmissionId(),
         teamName: sub.teamName!,
@@ -42,7 +42,7 @@ export async function createTestSubmissions() {
       };
 
       try {
-        dataStore.addSubmission(submission);
+        await realtimeDataStore.addSubmission(submission);
         console.log(`✅ Added test submission for ${submission.teamName}`);
       } catch (error) {
         console.error(
@@ -50,10 +50,10 @@ export async function createTestSubmissions() {
           error,
         );
       }
-    });
+    }
 
     console.log("✨ Test submissions created successfully!");
-    console.log("📊 Current submissions:", dataStore.getSubmissions());
+    console.log("�� Current submissions:", dataStore.getSubmissions());
     console.log("🏆 Current leaderboard:", dataStore.getLeaderboard());
   } catch (error) {
     console.error("❌ Error creating test submissions:", error);
