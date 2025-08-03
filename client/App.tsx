@@ -6,13 +6,14 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const AppContent = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -28,6 +29,19 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
+
+const App = () => {
+  // Only use ErrorBoundary in production to avoid hot reload issues
+  if (import.meta.env.PROD) {
+    return (
+      <ErrorBoundary>
+        <AppContent />
+      </ErrorBoundary>
+    );
+  }
+
+  return <AppContent />;
+};
 
 // Prevent multiple root creation during hot reload
 const rootElement = document.getElementById("root")!;
