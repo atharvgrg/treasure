@@ -64,11 +64,11 @@ export async function createTestSubmissions() {
 if (typeof window !== "undefined" && import.meta.env.DEV) {
   (window as any).createTestSubmissions = createTestSubmissions;
   (window as any).treasureShellData = {
-    dataStore,
+    realtimeDataStore,
     createTestSubmissions,
-    getSubmissions: () => dataStore.getSubmissions(),
-    getLeaderboard: () => dataStore.getLeaderboard(),
-    clearData: () => dataStore.clearAllData(),
+    getSubmissions: () => realtimeDataStore.getSubmissions(),
+    getLeaderboard: () => realtimeDataStore.getLeaderboard(),
+    clearData: () => realtimeDataStore.clearAllData(),
   };
 
   console.log(
