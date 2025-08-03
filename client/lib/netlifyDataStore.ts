@@ -135,6 +135,21 @@ class NetlifyDataStore {
       );
     }
 
+    // Check if we're in development mode
+    const isDevelopment = await this.checkDevelopmentMode();
+
+    if (isDevelopment) {
+      // Development mode - save directly to localStorage
+      this.submissions.unshift(submission);
+      this.submissions.sort(
+        (a, b) => b.level - a.level || a.timestamp - b.timestamp,
+      );
+      this.saveToFallback();
+      this.notifyListeners();
+      console.log("Submission saved locally (development mode)");
+      return;
+    }
+
     try {
       const response = await fetch("/api/submissions", {
         method: "POST",
