@@ -135,10 +135,7 @@ class CentralDataStore {
     console.log("🔄 Multi-device polling active (5 second intervals)");
   }
 
-  private handleRealtimeUpdate(payload: any) {
-    // In-memory store doesn't need real-time updates from external source
-    console.log("📡 In-memory store - real-time updates handled locally");
-  }
+
 
   private notifyListeners(): void {
     this.listeners.forEach((callback) => callback());
@@ -219,7 +216,7 @@ class CentralDataStore {
       this.saveToLocalStorage();
       this.notifyListeners();
 
-      console.log("�� Submission saved locally (API fallback)");
+      console.log("✅ Submission saved locally (API fallback)");
     }
   }
 
