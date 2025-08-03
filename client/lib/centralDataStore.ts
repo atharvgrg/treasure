@@ -208,37 +208,14 @@ class CentralDataStore {
 
   async clearAllData(): Promise<void> {
     if (!this.isInitialized) {
-      throw new Error("Database not initialized. Cannot clear data.");
+      throw new Error("Store not initialized. Cannot clear data.");
     }
 
-    console.log("🗑️ Clearing ALL data from central database");
-
-    try {
-      const { error } = await supabase
-        .from("submissions")
-        .delete()
-        .neq("id", ""); // Delete all records
-
-      if (error) {
-        if (
-          error.message.includes("does not exist") ||
-          error.message.includes("relation")
-        ) {
-          console.log("📋 Table doesn't exist, nothing to clear");
-        } else {
-          throw new Error(`Failed to clear data: ${error.message}`);
-        }
-      }
-    } catch (error) {
-      console.warn(
-        "⚠️ Clear operation failed, clearing local state only:",
-        error,
-      );
-    }
+    console.log("🗑️ Clearing ALL data from in-memory store");
 
     this.submissions = [];
     this.notifyListeners();
-    console.log("✅ All data cleared");
+    console.log("✅ All data cleared from memory");
   }
 
   exportData(): string {
