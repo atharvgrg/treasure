@@ -1,25 +1,30 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { dataStore } from "@/lib/dataStore";
 import { LEVELS, type Submission } from "@shared/gameConfig";
-import { 
-  Trophy, 
-  Users, 
-  Star, 
-  Clock, 
-  Download, 
-  Trash2, 
-  RefreshCw, 
+import {
+  Trophy,
+  Users,
+  Star,
+  Clock,
+  Download,
+  Trash2,
+  RefreshCw,
   Home,
   Monitor,
   BarChart3,
-  Shield
+  Shield,
+  Lock,
+  AlertTriangle
 } from "lucide-react";
 
 export default function Admin() {
