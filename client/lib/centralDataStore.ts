@@ -392,5 +392,5 @@ if (typeof window !== "undefined") {
     centralDataStore.destroy();
   });
 
-  console.log("📋 In-memory store ready for event");
+  console.log("🌐 Multi-device store ready for event");
 }
