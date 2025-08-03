@@ -6,7 +6,17 @@ const SUPABASE_URL = "https://qkoyrnxoepblvzzxafjp.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFrb3lybnhvZXBibHZ6enhhamlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkzNDk0MzIsImV4cCI6MjA0NDkyNTQzMn0.Q7wqbJOsKYBUqJRKJdAJTe2KNZ_ttvN2G_2Pq5XZ8co";
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let supabase: any = null;
+let supabaseError: string | null = null;
+
+// Initialize Supabase with error handling
+try {
+  supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  console.log("📡 Supabase client created successfully");
+} catch (error) {
+  console.error("❌ Failed to create Supabase client:", error);
+  supabaseError = error instanceof Error ? error.message : "Unknown error";
+}
 
 interface SupabaseSubmission {
   id: string;
