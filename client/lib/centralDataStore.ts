@@ -1,7 +1,7 @@
 import { Submission } from "@shared/gameConfig";
 
-// Reliable in-memory store for event
-console.log("🔧 Using in-memory store - optimized for event reliability");
+// Multi-device Netlify Functions store
+console.log("🌐 Using Netlify Functions for multi-device functionality");
 
 class CentralDataStore {
   private listeners: Set<() => void> = new Set();
@@ -9,26 +9,50 @@ class CentralDataStore {
   private isInitialized = false;
   private pollInterval: NodeJS.Timeout | null = null;
   private retryAttempts = 0;
-  private maxRetries = 5;
+  private maxRetries = 3;
+  private isDevelopmentMode = false;
 
   constructor() {
     this.initialize();
   }
 
   private async initialize() {
-    console.log("🚀 Initializing IN-MEMORY store for reliable event operation");
+    console.log("🚀 Initializing multi-device store with Netlify Functions");
 
-    // Initialize with empty submissions array
-    this.submissions = [];
+    // Check if we're in development mode (no API functions available)
+    this.isDevelopmentMode = await this.checkDevelopmentMode();
+
+    if (this.isDevelopmentMode) {
+      console.log("🔧 Development mode - using localStorage fallback");
+      this.loadFromLocalStorage();
+    } else {
+      console.log("🌐 Production mode - using Netlify Functions for multi-device");
+      await this.loadFromAPI();
+      this.setupPolling();
+    }
+
     this.isInitialized = true;
-    this.retryAttempts = 0; // Reset to show success
+    console.log("✅ Multi-device store initialized successfully");
+  }
 
-    console.log(
-      "✅ In-memory store initialized successfully - ready for event!",
-    );
-    console.log(
-      "📝 All submissions will be stored in memory and persist during the session",
-    );
+  private async checkDevelopmentMode(): Promise<boolean> {
+    try {
+      const response = await fetch("/api/health", {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      });
+
+      if (!response.ok) return true;
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        return true;
+      }
+
+      return false;
+    } catch {
+      return true;
+    }
   }
 
   private async ensureTableExists() {
