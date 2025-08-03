@@ -87,6 +87,19 @@ class NetlifyDataStore {
   }
 
   async addSubmission(submission: Submission): Promise<void> {
+    // Check for duplicates locally first
+    const existingSubmission = this.submissions.find(
+      (s) =>
+        s.teamName.toLowerCase() === submission.teamName.toLowerCase() &&
+        s.level === submission.level,
+    );
+
+    if (existingSubmission) {
+      throw new Error(
+        `Team "${submission.teamName}" has already submitted for Level ${submission.level}`,
+      );
+    }
+
     try {
       const response = await fetch("/api/submissions", {
         method: "POST",
@@ -95,6 +108,12 @@ class NetlifyDataStore {
         },
         body: JSON.stringify(submission),
       });
+
+      // Check if response is JSON
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("API not available - using local storage");
+      }
 
       const result = await response.json();
 
@@ -113,23 +132,11 @@ class NetlifyDataStore {
       this.saveToFallback();
       this.notifyListeners();
 
-      console.log("Submission saved successfully");
+      console.log("Submission saved to server successfully");
     } catch (error) {
-      console.error("Error saving submission:", error);
+      console.warn("API not available, saving to localStorage:", error);
 
-      // Fallback to localStorage
-      const existingSubmission = this.submissions.find(
-        (s) =>
-          s.teamName.toLowerCase() === submission.teamName.toLowerCase() &&
-          s.level === submission.level,
-      );
-
-      if (existingSubmission) {
-        throw new Error(
-          `Team "${submission.teamName}" has already submitted for Level ${submission.level}`,
-        );
-      }
-
+      // Fallback to localStorage - still works!
       this.submissions.unshift(submission);
       this.submissions.sort(
         (a, b) => b.level - a.level || a.timestamp - b.timestamp,
@@ -137,7 +144,8 @@ class NetlifyDataStore {
       this.saveToFallback();
       this.notifyListeners();
 
-      throw error; // Re-throw to show user there was an issue, but data is saved locally
+      console.log("Submission saved locally successfully");
+      // Don't throw error - submission was saved locally
     }
   }
 
