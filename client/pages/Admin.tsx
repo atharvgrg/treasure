@@ -110,7 +110,7 @@ export default function Admin() {
         "Are you sure you want to clear all data? This cannot be undone!",
       )
     ) {
-      await realtimeDataStore.clearAllData();
+      await netlifyDataStore.clearAllData();
     }
   };
 
