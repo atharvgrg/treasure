@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { centralDataStore } from "@/lib/centralDataStore";
+import { productionDataStore } from "@/lib/productionDataStore";
 
-export function useCentralStore() {
+export function useProductionStore() {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const initializeStore = async () => {
-      await centralDataStore.waitForInitialization();
+      await productionDataStore.waitForInitialization();
       setIsInitialized(true);
     };
 
@@ -15,9 +15,9 @@ export function useCentralStore() {
 
   return {
     isInitialized,
-    store: centralDataStore,
+    store: productionDataStore,
   };
 }
 
 // Keep backward compatibility
-export const useRealtimeStore = useCentralStore;
+export const useRealtimeStore = useProductionStore;
