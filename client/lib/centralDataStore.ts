@@ -220,39 +220,48 @@ class CentralDataStore {
 
     console.log(`📝 Adding submission to central database: ${submission.teamName} - Level ${submission.level}`);
 
-    // Check for duplicates in database (not local cache)
-    const { data: existing } = await supabase
-      .from('submissions')
-      .select('id')
-      .eq('team_name', submission.teamName.toLowerCase())
-      .eq('level', submission.level)
-      .limit(1);
+    try {
+      // Check for duplicates in database (not local cache)
+      const { data: existing, error: duplicateError } = await supabase
+        .from('submissions')
+        .select('id')
+        .eq('team_name', submission.teamName.toLowerCase())
+        .eq('level', submission.level)
+        .limit(1);
 
-    if (existing && existing.length > 0) {
-      throw new Error(`Team "${submission.teamName}" has already submitted for Level ${submission.level}`);
+      // If duplicate check fails because table doesn't exist, we'll handle it in the insert
+      if (!duplicateError && existing && existing.length > 0) {
+        throw new Error(`Team "${submission.teamName}" has already submitted for Level ${submission.level}`);
+      }
+
+      const supabaseData = this.mapToSupabase(submission);
+
+      const { data, error } = await supabase
+        .from('submissions')
+        .insert(supabaseData)
+        .select()
+        .single();
+
+      if (error) {
+        console.error("❌ Failed to save to central database:", error);
+        throw new Error(`Failed to save submission: ${error.message}`);
+      }
+
+      console.log("✅ Submission saved to central database successfully");
+
+      // Real-time update will handle the local state update
+      // But also update immediately for better UX
+      const newSubmission = this.mapFromSupabase(data);
+      this.submissions = [newSubmission, ...this.submissions.filter(s => s.id !== newSubmission.id)];
+      this.submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp);
+      this.notifyListeners();
+    } catch (error) {
+      // If it's a table/relation error, the table probably needs to be created in Supabase dashboard
+      if (error instanceof Error && (error.message.includes('relation') || error.message.includes('does not exist'))) {
+        throw new Error("Database table not found. Please ensure the 'submissions' table is created in your Supabase dashboard.");
+      }
+      throw error;
     }
-
-    const supabaseData = this.mapToSupabase(submission);
-    
-    const { data, error } = await supabase
-      .from('submissions')
-      .insert(supabaseData)
-      .select()
-      .single();
-
-    if (error) {
-      console.error("❌ Failed to save to central database:", error);
-      throw new Error(`Failed to save submission: ${error.message}`);
-    }
-
-    console.log("✅ Submission saved to central database successfully");
-    
-    // Real-time update will handle the local state update
-    // But also update immediately for better UX
-    const newSubmission = this.mapFromSupabase(data);
-    this.submissions = [newSubmission, ...this.submissions.filter(s => s.id !== newSubmission.id)];
-    this.submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp);
-    this.notifyListeners();
   }
 
   getSubmissions(): Submission[] {
