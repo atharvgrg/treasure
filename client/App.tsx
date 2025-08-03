@@ -43,7 +43,7 @@ const App = () => {
       </ErrorBoundary>
     );
   }
-  
+
   return <AppContent />;
 };
 
