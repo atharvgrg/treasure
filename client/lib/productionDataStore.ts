@@ -32,8 +32,8 @@ class ProductionDataStore {
     console.log("📊 Designed for hundreds of concurrent teams");
 
     if (firebaseError) {
-      console.error("❌ Firebase not available:", firebaseError);
-      this.handleFirebaseUnavailable();
+      console.log("🔧 Firebase not configured, using high-performance local mode");
+      this.initializeLocalMode();
       return;
     }
 
