@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { productionDataStore } from "@/lib/productionDataStore";
+import { postgresDataStore } from "@/lib/postgresDataStore";
 
-export function useProductionStore() {
+export function usePostgreSQLStore() {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const initializeStore = async () => {
-      await productionDataStore.waitForInitialization();
+      await postgresDataStore.waitForInitialization();
       setIsInitialized(true);
     };
 
@@ -15,9 +15,9 @@ export function useProductionStore() {
 
   return {
     isInitialized,
-    store: productionDataStore,
+    store: postgresDataStore,
   };
 }
 
 // Keep backward compatibility
-export const useRealtimeStore = useProductionStore;
+export const useRealtimeStore = usePostgreSQLStore;
