@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { realtimeDataStore } from '@/lib/realtimeDataStore';
+import { useEffect, useState } from "react";
+import { realtimeDataStore } from "@/lib/realtimeDataStore";
 
 export function useRealtimeStore() {
   const [isInitialized, setIsInitialized] = useState(false);

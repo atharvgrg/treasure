@@ -1,9 +1,10 @@
-import { createClient } from '@supabase/supabase-js';
-import type { Submission } from '@shared/gameConfig';
+import { createClient } from "@supabase/supabase-js";
+import type { Submission } from "@shared/gameConfig";
 
 // Supabase configuration - these can be public for client-side access
-const supabaseUrl = 'https://xnqxwhbbrpdfxdlvfuyx.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXh3aGJicnBkZnhkbHZmdXl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY1NTg5MTAsImV4cCI6MjA1MjEzNDkxMH0.jkV7m5e64OBPE6GrKdRPcWfmhOvp7S7Hj8Z2YQB-KtM';
+const supabaseUrl = "https://xnqxwhbbrpdfxdlvfuyx.supabase.co";
+const supabaseAnonKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXh3aGJicnBkZnhkbHZmdXl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY1NTg5MTAsImV4cCI6MjA1MjEzNDkxMH0.jkV7m5e64OBPE6GrKdRPcWfmhOvp7S7Hj8Z2YQB-KtM";
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -18,8 +19,10 @@ export interface Database {
     Tables: {
       submissions: {
         Row: SupabaseSubmission;
-        Insert: Omit<SupabaseSubmission, 'created_at' | 'updated_at'>;
-        Update: Partial<Omit<SupabaseSubmission, 'id' | 'created_at' | 'updated_at'>>;
+        Insert: Omit<SupabaseSubmission, "created_at" | "updated_at">;
+        Update: Partial<
+          Omit<SupabaseSubmission, "id" | "created_at" | "updated_at">
+        >;
       };
     };
   };
@@ -29,13 +32,15 @@ export interface Database {
 export async function initializeDatabase() {
   try {
     // Check if the table exists by trying to select from it
-    const { error } = await supabase
-      .from('submissions')
-      .select('id')
-      .limit(1);
-    
-    if (error && error.message.includes('relation "public.submissions" does not exist')) {
-      console.log('Database table does not exist. Please create it manually or use the SQL below:');
+    const { error } = await supabase.from("submissions").select("id").limit(1);
+
+    if (
+      error &&
+      error.message.includes('relation "public.submissions" does not exist')
+    ) {
+      console.log(
+        "Database table does not exist. Please create it manually or use the SQL below:",
+      );
       console.log(`
 CREATE TABLE public.submissions (
   id text PRIMARY KEY,
@@ -63,14 +68,14 @@ TO anon
 USING (true)
 WITH CHECK (true);
       `);
-      
+
       // For now, return false to indicate table needs to be created
       return false;
     }
-    
+
     return true;
   } catch (error) {
-    console.error('Error initializing database:', error);
+    console.error("Error initializing database:", error);
     return false;
   }
 }

@@ -54,7 +54,9 @@ export default function Index() {
     setIsSubmitting(true);
 
     if (!isInitialized) {
-      setError("System is still initializing. Please wait a moment and try again.");
+      setError(
+        "System is still initializing. Please wait a moment and try again.",
+      );
       setIsSubmitting(false);
       return;
     }
