@@ -364,6 +364,24 @@ export default function Index() {
             </Card>
           </div>
 
+          {/* Development Mode Warning */}
+          {isDevelopmentMode && (
+            <Card className="mt-8 glow-border bg-card/80 backdrop-blur border-2 border-cyber-blue/50">
+              <CardContent className="pt-6">
+                <div className="text-center space-y-3">
+                  <h3 className="text-xl font-semibold text-cyber-blue matrix-text glow-text flex items-center justify-center gap-2">
+                    <Terminal className="w-6 h-6" />
+                    🔧 Development Mode
+                  </h3>
+                  <p className="text-sm text-cyber-blue/80 matrix-text leading-relaxed">
+                    API functions not available - using localStorage for data storage.
+                    Deploy to Netlify for full multi-device functionality.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Info Card */}
           <Card className="mt-8 glow-border bg-card/80 backdrop-blur border-2 border-cyber-purple/30">
             <CardContent className="pt-6">
