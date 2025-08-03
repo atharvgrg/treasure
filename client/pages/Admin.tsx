@@ -110,7 +110,7 @@ export default function Admin() {
         "Are you sure you want to clear all data? This cannot be undone!",
       )
     ) {
-      await centralDataStore.clearAllData();
+      await productionDataStore.clearAllData();
     }
   };
 
@@ -118,11 +118,11 @@ export default function Admin() {
     setResetError("");
 
     if (resetPassword.trim() === "GDG-IET") {
-      await centralDataStore.clearAllData();
+      await productionDataStore.clearAllData();
       setResetPassword("");
       setIsResetDialogOpen(false);
       // Show success message
-      alert("🔥 All data has been securely wiped! Database reset complete.");
+      alert("🔥 All data has been securely wiped! Production database reset complete.");
     } else {
       setResetError("Incorrect password. Access denied.");
     }
