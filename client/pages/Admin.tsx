@@ -56,6 +56,7 @@ export default function Admin() {
   const [resetError, setResetError] = useState("");
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
   const navigate = useNavigate();
+  const { isInitialized } = useRealtimeStore();
 
   const refreshData = () => {
     setSubmissions(realtimeDataStore.getSubmissions());
