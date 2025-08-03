@@ -423,7 +423,7 @@ export default function Index() {
                   )}
                   {!dbStatus.databaseConnected && (
                     <p className="text-xs text-cyber-red/60 matrix-text">
-                      🚨 Check internet connection - Production database
+                      🚨 Check internet connection - PostgreSQL database
                       required for event!
                     </p>
                   )}
