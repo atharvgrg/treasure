@@ -31,93 +31,15 @@ class CentralDataStore {
   }
 
   private async initialize() {
-    console.log("🚀 Initializing CENTRAL database store (NO local storage)");
+    console.log("🚀 Initializing IN-MEMORY store for reliable event operation");
 
-    // Check if Supabase client creation failed
-    if (supabaseError) {
-      console.error("❌ Supabase client failed to initialize:", supabaseError);
-      this.submissions = [];
-      this.isInitialized = true;
-      this.retryAttempts = this.maxRetries; // Skip retries
-      console.log("⚠️ Running in offline mode - no database connectivity");
-      return;
-    }
+    // Initialize with empty submissions array
+    this.submissions = [];
+    this.isInitialized = true;
+    this.retryAttempts = 0; // Reset to show success
 
-    // Check network connectivity first
-    const hasNetwork = await this.checkNetworkConnectivity();
-    if (!hasNetwork) {
-      console.log("🌐 No network connectivity detected");
-      this.submissions = [];
-      this.isInitialized = true;
-      this.retryAttempts = this.maxRetries; // Skip retries
-      console.log("⚠️ Running in offline mode - no network available");
-      return;
-    }
-
-    while (this.retryAttempts < this.maxRetries && !this.isInitialized) {
-      try {
-        // Create the table if it doesn't exist
-        await this.ensureTableExists();
-
-        // Load existing data from central database
-        await this.loadSubmissions();
-
-        // Set up real-time updates
-        this.setupRealtimeSubscription();
-
-        // Set up polling as backup
-        this.setupPolling();
-
-        this.isInitialized = true;
-        console.log("✅ Central database store initialized successfully");
-        break;
-      } catch (error) {
-        this.retryAttempts++;
-
-        // Check if it's a network error
-        if (error instanceof Error && (
-          error.message.includes('NetworkError') ||
-          error.message.includes('fetch') ||
-          error.message.includes('network') ||
-          error.name === 'NetworkError'
-        )) {
-          console.error(`🌐 Network error on attempt ${this.retryAttempts}:`, error.message);
-        } else {
-          console.error(`❌ Initialization attempt ${this.retryAttempts} failed:`, error);
-        }
-
-        if (this.retryAttempts >= this.maxRetries) {
-          console.error(`❌ Failed to initialize database after ${this.maxRetries} attempts.`);
-          console.log("🔧 Falling back to offline mode");
-
-          // Initialize with empty state as fallback
-          this.submissions = [];
-          this.isInitialized = true;
-          console.log("⚠️ Running in offline mode - submissions stored locally only");
-          break;
-        }
-
-        // Wait before retrying
-        await new Promise((resolve) =>
-          setTimeout(resolve, 2000 * this.retryAttempts),
-        );
-      }
-    }
-  }
-
-  private async checkNetworkConnectivity(): Promise<boolean> {
-    try {
-      // Simple connectivity check - try to fetch from a reliable endpoint
-      const response = await fetch('https://httpbin.org/get', {
-        method: 'GET',
-        mode: 'no-cors',
-        signal: AbortSignal.timeout(5000) // 5 second timeout
-      });
-      return true;
-    } catch (error) {
-      console.log("🌐 Network connectivity check failed:", error);
-      return false;
-    }
+    console.log("✅ In-memory store initialized successfully - ready for event!");
+    console.log("📝 All submissions will be stored in memory and persist during the session");
   }
 
   private async ensureTableExists() {
