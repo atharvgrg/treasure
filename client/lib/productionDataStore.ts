@@ -55,8 +55,8 @@ class ProductionDataStore {
       console.log("✅ Production Firebase store initialized successfully");
       console.log("🌐 Real-time multi-device synchronization active");
     } catch (error) {
-      console.error("❌ Firebase initialization failed:", error);
-      this.handleFirebaseUnavailable();
+      console.error("❌ Firebase connection failed, switching to local mode:", error);
+      this.initializeLocalMode();
     }
   }
 
