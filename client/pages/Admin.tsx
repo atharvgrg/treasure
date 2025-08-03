@@ -59,8 +59,8 @@ export default function Admin() {
   const { isInitialized } = useRealtimeStore();
 
   const refreshData = () => {
-    setSubmissions(realtimeDataStore.getSubmissions());
-    setLeaderboard(realtimeDataStore.getLeaderboard());
+    setSubmissions(netlifyDataStore.getSubmissions());
+    setLeaderboard(netlifyDataStore.getLeaderboard());
     setLastUpdate(new Date());
   };
 
