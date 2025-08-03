@@ -112,19 +112,32 @@ class CentralDataStore {
   }
 
   private async loadSubmissions() {
-    const { data, error } = await supabase
-      .from('submissions')
-      .select('*')
-      .order('level', { ascending: false })
-      .order('timestamp', { ascending: true });
+    try {
+      const { data, error } = await supabase
+        .from('submissions')
+        .select('*')
+        .order('level', { ascending: false })
+        .order('timestamp', { ascending: true });
 
-    if (error) {
-      throw new Error(`Failed to load submissions: ${error.message}`);
+      if (error) {
+        if (error.message.includes('does not exist') || error.message.includes('relation') || error.message.includes('table')) {
+          console.log("📋 Table doesn't exist yet, starting with empty data");
+          this.submissions = [];
+          this.notifyListeners();
+          return;
+        }
+        throw new Error(`Failed to load submissions: ${error.message}`);
+      }
+
+      this.submissions = (data || []).map(this.mapFromSupabase);
+      this.notifyListeners();
+      console.log(`📊 Loaded ${this.submissions.length} submissions from central database`);
+    } catch (error) {
+      console.warn("⚠️ Load submissions failed, starting with empty data:", error);
+      this.submissions = [];
+      this.notifyListeners();
+      // Don't throw error - continue with empty state
     }
-
-    this.submissions = (data || []).map(this.mapFromSupabase);
-    this.notifyListeners();
-    console.log(`📊 Loaded ${this.submissions.length} submissions from central database`);
   }
 
   private setupRealtimeSubscription() {
