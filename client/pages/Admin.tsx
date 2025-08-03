@@ -31,6 +31,9 @@ export default function Admin() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [resetPassword, setResetPassword] = useState("");
+  const [resetError, setResetError] = useState("");
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
   const navigate = useNavigate();
 
   const refreshData = () => {
