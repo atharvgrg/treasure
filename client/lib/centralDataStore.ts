@@ -131,6 +131,11 @@ class CentralDataStore {
   }
 
   private async ensureTableExists() {
+    if (!supabase) {
+      console.log("⚠️ Supabase client not available, skipping table check");
+      return;
+    }
+
     try {
       // First, try to query the table to see if it exists
       const { data, error: queryError } = await supabase
@@ -165,11 +170,22 @@ class CentralDataStore {
         await supabase.from("submissions").delete().eq("id", testSubmission.id);
         console.log("✅ Table created successfully via insert");
       } else {
+        if (insertError.message.includes('NetworkError') || insertError.message.includes('fetch')) {
+          throw new Error(`Network error: ${insertError.message}`);
+        }
         console.log("⚠️ Could not auto-create table:", insertError.message);
         // Table creation failed, but we'll continue anyway
         // The table might need to be created manually in Supabase dashboard
       }
     } catch (error) {
+      if (error instanceof Error && (
+        error.message.includes('NetworkError') ||
+        error.message.includes('fetch') ||
+        error.name === 'NetworkError'
+      )) {
+        console.error("🌐 Network error during table check:", error.message);
+        throw error; // Re-throw network errors to trigger fallback
+      }
       console.warn("⚠️ Table creation check failed:", error);
       // Continue anyway - the table might exist but have permission issues
     }
