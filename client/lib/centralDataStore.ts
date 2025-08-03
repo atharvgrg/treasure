@@ -226,12 +226,5 @@ if (typeof window !== "undefined") {
     centralDataStore.destroy();
   });
 
-  // Clear any existing local storage to ensure no local data conflicts
-  try {
-    localStorage.removeItem("treasure_shell_submissions");
-    localStorage.removeItem("treasure_shell_realtime_submissions");
-    console.log("🧹 Cleared old local storage data");
-  } catch (error) {
-    console.warn("Could not clear local storage:", error);
-  }
+  console.log("📋 In-memory store ready for event");
 }
