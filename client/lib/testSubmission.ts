@@ -53,8 +53,8 @@ export async function createTestSubmissions() {
     }
 
     console.log("✨ Test submissions created successfully!");
-    console.log("📊 Current submissions:", realtimeDataStore.getSubmissions());
-    console.log("🏆 Current leaderboard:", realtimeDataStore.getLeaderboard());
+    console.log("📊 Current submissions:", netlifyDataStore.getSubmissions());
+    console.log("🏆 Current leaderboard:", netlifyDataStore.getLeaderboard());
   } catch (error) {
     console.error("❌ Error creating test submissions:", error);
   }
