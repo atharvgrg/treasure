@@ -219,7 +219,7 @@ class CentralDataStore {
       this.saveToLocalStorage();
       this.notifyListeners();
 
-      console.log("✅ Submission saved locally (API fallback)");
+      console.log("�� Submission saved locally (API fallback)");
     }
   }
 
@@ -353,12 +353,25 @@ class CentralDataStore {
     databaseConnected: boolean;
     message: string;
   } {
+    let message = "";
+    let databaseConnected = false;
+
+    if (!this.isInitialized) {
+      message = "Initializing multi-device store...";
+    } else if (this.isDevelopmentMode) {
+      message = `Development mode • ${this.submissions.length} submissions (local only)`;
+      databaseConnected = false;
+    } else {
+      message = `Multi-device active • ${this.submissions.length} submissions`;
+      databaseConnected = true;
+    }
+
     return {
       initialized: this.isInitialized,
       submissionCount: this.submissions.length,
       retryAttempts: this.retryAttempts,
-      databaseConnected: true, // In-memory store is always "connected"
-      message: `In-memory store ready • ${this.submissions.length} submissions`,
+      databaseConnected,
+      message,
     };
   }
 
