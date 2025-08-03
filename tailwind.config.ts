@@ -57,6 +57,18 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Custom cyberpunk colors
+        cyber: {
+          green: "hsl(var(--cyber-green))",
+          "green-dark": "hsl(var(--cyber-green-dark))",
+          blue: "hsl(var(--cyber-blue))",
+          purple: "hsl(var(--cyber-purple))",
+          red: "hsl(var(--cyber-red))",
+        },
+        terminal: {
+          bg: "hsl(var(--terminal-bg))",
+          border: "hsl(var(--terminal-border))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
