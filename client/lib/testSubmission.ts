@@ -53,8 +53,8 @@ export async function createTestSubmissions() {
     }
 
     console.log("✨ Test submissions created successfully!");
-    console.log("�� Current submissions:", dataStore.getSubmissions());
-    console.log("🏆 Current leaderboard:", dataStore.getLeaderboard());
+    console.log("📊 Current submissions:", realtimeDataStore.getSubmissions());
+    console.log("🏆 Current leaderboard:", realtimeDataStore.getLeaderboard());
   } catch (error) {
     console.error("❌ Error creating test submissions:", error);
   }
