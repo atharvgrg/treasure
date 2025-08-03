@@ -150,10 +150,10 @@ class CentralDataStore {
     }
 
     console.log(
-      `📝 Adding submission to in-memory store: ${submission.teamName} - Level ${submission.level}`,
+      `📝 Adding submission: ${submission.teamName} - Level ${submission.level}`,
     );
 
-    // Check for duplicates
+    // Check for duplicates locally first
     const existingSubmission = this.submissions.find(
       (s) =>
         s.teamName.toLowerCase() === submission.teamName.toLowerCase() &&
@@ -166,14 +166,61 @@ class CentralDataStore {
       );
     }
 
-    // Add to in-memory store
-    this.submissions = [submission, ...this.submissions];
-    this.submissions.sort(
-      (a, b) => b.level - a.level || a.timestamp - b.timestamp,
-    );
-    this.notifyListeners();
+    if (this.isDevelopmentMode) {
+      // Development mode: store locally only
+      this.submissions = [submission, ...this.submissions];
+      this.submissions.sort(
+        (a, b) => b.level - a.level || a.timestamp - b.timestamp,
+      );
+      this.saveToLocalStorage();
+      this.notifyListeners();
+      console.log("✅ Submission stored locally (development mode)");
+      return;
+    }
 
-    console.log("✅ Submission stored in memory successfully");
+    try {
+      // Production mode: save to API for multi-device sync
+      const response = await fetch("/api/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submission),
+      });
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("API not available - using local storage");
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to add submission");
+      }
+
+      // Update local state immediately
+      this.submissions = [
+        result.data,
+        ...this.submissions.filter((s) => s.id !== result.data.id),
+      ];
+      this.submissions.sort(
+        (a, b) => b.level - a.level || a.timestamp - b.timestamp,
+      );
+      this.notifyListeners();
+
+      console.log("✅ Submission saved to API for multi-device sync");
+    } catch (error) {
+      console.warn("⚠️ API not available, saving locally:", error);
+
+      // Fallback to localStorage
+      this.submissions = [submission, ...this.submissions];
+      this.submissions.sort(
+        (a, b) => b.level - a.level || a.timestamp - b.timestamp,
+      );
+      this.saveToLocalStorage();
+      this.notifyListeners();
+
+      console.log("✅ Submission saved locally (API fallback)");
+    }
   }
 
   getSubmissions(): Submission[] {
