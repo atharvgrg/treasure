@@ -140,24 +140,30 @@ class SupabaseDataStore {
   private async loadSubmissions() {
     console.log("📊 Loading existing submissions...");
 
-    const { data, error } = await supabase
-      .from("submissions")
-      .select("*")
-      .order("level", { ascending: false })
-      .order("timestamp", { ascending: true });
+    try {
+      const { data, error } = await supabase
+        .from("submissions")
+        .select("*")
+        .order("level", { ascending: false })
+        .order("timestamp", { ascending: true });
 
-    if (error) {
-      if (error.message.includes("does not exist")) {
-        console.log("📋 No existing submissions table - starting fresh");
-        this.submissions = [];
+      if (error) {
+        if (error.message.includes("does not exist") || error.message.includes("relation")) {
+          console.log("📋 No existing submissions table - starting fresh");
+          this.submissions = [];
+        } else {
+          console.warn("⚠️ Error loading submissions:", error.message);
+          this.submissions = [];
+        }
       } else {
-        throw new Error(`Failed to load submissions: ${error.message}`);
+        this.submissions = data || [];
+        console.log(
+          `📊 Loaded ${this.submissions.length} submissions from Supabase`,
+        );
       }
-    } else {
-      this.submissions = data || [];
-      console.log(
-        `📊 Loaded ${this.submissions.length} submissions from Supabase`,
-      );
+    } catch (error) {
+      console.warn("⚠️ Failed to load submissions, starting empty:", error);
+      this.submissions = [];
     }
 
     this.notifyListeners();
