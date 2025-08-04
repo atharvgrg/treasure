@@ -30,7 +30,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { postgresDataStore } from "@/lib/postgresDataStore";
+import { supabaseDataStore } from "@/lib/supabaseDataStore";
 import { LEVELS, type Submission } from "@shared/gameConfig";
 import {
   Trophy,
