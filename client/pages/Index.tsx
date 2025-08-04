@@ -19,7 +19,7 @@ import {
   getCompletedLevels,
   type Submission,
 } from "@shared/gameConfig";
-import { postgresDataStore } from "@/lib/postgresDataStore";
+import { supabaseDataStore } from "@/lib/supabaseDataStore";
 import {
   Terminal,
   Star,
