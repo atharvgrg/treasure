@@ -404,7 +404,7 @@ export default function Index() {
                   }`}
                 >
                   <Terminal className="w-6 h-6" />
-                  🔥 PostgreSQL Database
+                  🔥 Supabase Database
                 </h3>
                 <div className="space-y-2">
                   <p
