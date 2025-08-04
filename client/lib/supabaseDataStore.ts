@@ -42,9 +42,21 @@ class SupabaseDataStore {
       console.log("✅ Supabase connected successfully!");
       console.log("🌐 Real-time synchronization ACTIVE across all devices");
     } catch (error) {
-      console.error("❌ Supabase connection failed:", error);
-      this.isInitialized = true;
-      this.isConnected = false;
+      console.warn("⚠️ Supabase setup encountered issues:", error);
+
+      // Try to continue with limited functionality
+      try {
+        await this.loadSubmissions();
+        this.isInitialized = true;
+        this.isConnected = true;
+        console.log("✅ Supabase connected with limited functionality");
+      } catch (fallbackError) {
+        console.error("❌ Complete Supabase failure:", fallbackError);
+        this.isInitialized = true;
+        this.isConnected = false;
+        this.submissions = [];
+        this.notifyListeners();
+      }
     }
   }
 
