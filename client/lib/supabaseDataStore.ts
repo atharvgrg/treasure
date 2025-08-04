@@ -60,23 +60,78 @@ class SupabaseDataStore {
   }
 
   private async ensureTableExists() {
-    console.log("📋 Creating submissions table...");
+    console.log("📋 Ensuring submissions table exists...");
 
-    // Create the table using raw SQL
-    const { error } = await supabase.rpc("create_submissions_table");
-
-    if (error && error.message.includes("function")) {
-      // Function doesn't exist, try direct SQL
-      const { error: sqlError } = await supabase
+    try {
+      // Try to query the table first
+      const { data, error: queryError } = await supabase
         .from("submissions")
         .select("id")
         .limit(1);
 
-      if (sqlError && sqlError.message.includes("does not exist")) {
-        console.log(
-          "📋 Table doesn't exist, but that's fine - it will be created on first insert",
-        );
+      if (!queryError) {
+        console.log("✅ Table already exists");
+        return;
       }
+
+      // If table doesn't exist, create it with SQL
+      if (queryError.message.includes("does not exist")) {
+        console.log("📋 Creating submissions table...");
+
+        const { error: createError } = await supabase.rpc('exec_sql', {
+          sql: `
+            CREATE TABLE IF NOT EXISTS public.submissions (
+              id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+              "teamName" TEXT NOT NULL,
+              level INTEGER NOT NULL,
+              difficulty INTEGER NOT NULL,
+              "completedLevels" INTEGER[] NOT NULL,
+              timestamp BIGINT NOT NULL,
+              created_at TIMESTAMPTZ DEFAULT NOW(),
+              UNIQUE("teamName", level)
+            );
+
+            -- Enable Row Level Security
+            ALTER TABLE public.submissions ENABLE ROW LEVEL SECURITY;
+
+            -- Create policy to allow all operations (for demo purposes)
+            CREATE POLICY "Allow all operations" ON public.submissions FOR ALL USING (true);
+          `
+        });
+
+        if (createError) {
+          // If RPC doesn't work, try inserting a test record to trigger table creation
+          console.log("📋 RPC not available, trying alternative table creation...");
+
+          const testSubmission = {
+            id: 'test-' + Date.now(),
+            teamName: 'Test Team',
+            level: 1,
+            difficulty: 1,
+            completedLevels: [1],
+            timestamp: Date.now()
+          };
+
+          const { error: insertError } = await supabase
+            .from('submissions')
+            .insert(testSubmission);
+
+          if (!insertError) {
+            // Delete the test record
+            await supabase
+              .from('submissions')
+              .delete()
+              .eq('id', testSubmission.id);
+            console.log("✅ Table created via insert method");
+          } else {
+            console.warn("⚠️ Could not create table automatically:", insertError.message);
+          }
+        } else {
+          console.log("✅ Table created successfully");
+        }
+      }
+    } catch (error) {
+      console.warn("⚠️ Table setup warning:", error);
     }
 
     console.log("✅ Table setup complete");
