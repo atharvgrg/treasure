@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { postgresDataStore } from "@/lib/postgresDataStore";
+import { supabaseDataStore } from "@/lib/supabaseDataStore";
 
-export function usePostgreSQLStore() {
+export function useSupabaseStore() {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const initializeStore = async () => {
-      await postgresDataStore.waitForInitialization();
+      await supabaseDataStore.waitForInitialization();
       setIsInitialized(true);
     };
 
@@ -15,9 +15,9 @@ export function usePostgreSQLStore() {
 
   return {
     isInitialized,
-    store: postgresDataStore,
+    store: supabaseDataStore,
   };
 }
 
 // Keep backward compatibility
-export const useRealtimeStore = usePostgreSQLStore;
+export const useRealtimeStore = useSupabaseStore;
