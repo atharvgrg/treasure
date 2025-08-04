@@ -67,7 +67,9 @@ class SupabaseDataStore {
       // If we get here, Supabase is accessible
       console.log("💓 Supabase connection test: SUCCESS");
     } catch (error) {
-      throw new Error(`Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Connection failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -90,7 +92,7 @@ class SupabaseDataStore {
       if (queryError.message.includes("does not exist")) {
         console.log("📋 Creating submissions table...");
 
-        const { error: createError } = await supabase.rpc('exec_sql', {
+        const { error: createError } = await supabase.rpc("exec_sql", {
           sql: `
             CREATE TABLE IF NOT EXISTS public.submissions (
               id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
@@ -108,35 +110,40 @@ class SupabaseDataStore {
 
             -- Create policy to allow all operations (for demo purposes)
             CREATE POLICY "Allow all operations" ON public.submissions FOR ALL USING (true);
-          `
+          `,
         });
 
         if (createError) {
           // If RPC doesn't work, try inserting a test record to trigger table creation
-          console.log("📋 RPC not available, trying alternative table creation...");
+          console.log(
+            "📋 RPC not available, trying alternative table creation...",
+          );
 
           const testSubmission = {
-            id: 'test-' + Date.now(),
-            teamName: 'Test Team',
+            id: "test-" + Date.now(),
+            teamName: "Test Team",
             level: 1,
             difficulty: 1,
             completedLevels: [1],
-            timestamp: Date.now()
+            timestamp: Date.now(),
           };
 
           const { error: insertError } = await supabase
-            .from('submissions')
+            .from("submissions")
             .insert(testSubmission);
 
           if (!insertError) {
             // Delete the test record
             await supabase
-              .from('submissions')
+              .from("submissions")
               .delete()
-              .eq('id', testSubmission.id);
+              .eq("id", testSubmission.id);
             console.log("✅ Table created via insert method");
           } else {
-            console.warn("⚠️ Could not create table automatically:", insertError.message);
+            console.warn(
+              "⚠️ Could not create table automatically:",
+              insertError.message,
+            );
           }
         } else {
           console.log("✅ Table created successfully");
@@ -160,7 +167,10 @@ class SupabaseDataStore {
         .order("timestamp", { ascending: true });
 
       if (error) {
-        if (error.message.includes("does not exist") || error.message.includes("relation")) {
+        if (
+          error.message.includes("does not exist") ||
+          error.message.includes("relation")
+        ) {
           console.log("📋 No existing submissions table - starting fresh");
           this.submissions = [];
         } else {
