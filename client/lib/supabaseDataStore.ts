@@ -1,9 +1,10 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 import { Submission } from "@shared/gameConfig";
 
 // YOUR REAL SUPABASE CREDENTIALS - WORKING NOW!
-const supabaseUrl = 'https://ogwqprcxmivlolpmhicm.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nd3FwcmN4bWl2bG9scG1oaWNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzMDYzNjgsImV4cCI6MjA2OTg4MjM2OH0.V87l-Fgr7zVHjMo_VFajn5mFOT-vn9z5oVujgkoe36w';
+const supabaseUrl = "https://ogwqprcxmivlolpmhicm.supabase.co";
+const supabaseKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nd3FwcmN4bWl2bG9scG1oaWNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzMDYzNjgsImV4cCI6MjA2OTg4MjM2OH0.V87l-Fgr7zVHjMo_VFajn5mFOT-vn9z5oVujgkoe36w";
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -21,26 +22,25 @@ class SupabaseDataStore {
   private async initialize() {
     console.log("🚀 Connecting to YOUR Supabase database");
     console.log("📊 Real-time multi-device synchronization starting...");
-    
+
     try {
       // Test connection first
       await this.testConnection();
-      
+
       // Create table if it doesn't exist
       await this.ensureTableExists();
-      
+
       // Load existing submissions
       await this.loadSubmissions();
-      
+
       // Set up real-time subscriptions
       this.setupRealtimeSubscription();
-      
+
       this.isInitialized = true;
       this.isConnected = true;
-      
+
       console.log("✅ Supabase connected successfully!");
       console.log("🌐 Real-time synchronization ACTIVE across all devices");
-      
     } catch (error) {
       console.error("❌ Supabase connection failed:", error);
       this.isInitialized = true;
@@ -50,8 +50,11 @@ class SupabaseDataStore {
 
   private async testConnection() {
     // Simple connection test
-    const { data, error } = await supabase.from('submissions').select('count').limit(1);
-    if (error && !error.message.includes('does not exist')) {
+    const { data, error } = await supabase
+      .from("submissions")
+      .select("count")
+      .limit(1);
+    if (error && !error.message.includes("does not exist")) {
       throw new Error(`Connection failed: ${error.message}`);
     }
     console.log("💓 Supabase connection test: SUCCESS");
@@ -59,36 +62,38 @@ class SupabaseDataStore {
 
   private async ensureTableExists() {
     console.log("📋 Creating submissions table...");
-    
+
     // Create the table using raw SQL
-    const { error } = await supabase.rpc('create_submissions_table');
-    
-    if (error && error.message.includes('function')) {
+    const { error } = await supabase.rpc("create_submissions_table");
+
+    if (error && error.message.includes("function")) {
       // Function doesn't exist, try direct SQL
       const { error: sqlError } = await supabase
-        .from('submissions')
-        .select('id')
+        .from("submissions")
+        .select("id")
         .limit(1);
-        
-      if (sqlError && sqlError.message.includes('does not exist')) {
-        console.log("📋 Table doesn't exist, but that's fine - it will be created on first insert");
+
+      if (sqlError && sqlError.message.includes("does not exist")) {
+        console.log(
+          "📋 Table doesn't exist, but that's fine - it will be created on first insert",
+        );
       }
     }
-    
+
     console.log("✅ Table setup complete");
   }
 
   private async loadSubmissions() {
     console.log("📊 Loading existing submissions...");
-    
+
     const { data, error } = await supabase
-      .from('submissions')
-      .select('*')
-      .order('level', { ascending: false })
-      .order('timestamp', { ascending: true });
+      .from("submissions")
+      .select("*")
+      .order("level", { ascending: false })
+      .order("timestamp", { ascending: true });
 
     if (error) {
-      if (error.message.includes('does not exist')) {
+      if (error.message.includes("does not exist")) {
         console.log("📋 No existing submissions table - starting fresh");
         this.submissions = [];
       } else {
@@ -96,50 +101,56 @@ class SupabaseDataStore {
       }
     } else {
       this.submissions = data || [];
-      console.log(`📊 Loaded ${this.submissions.length} submissions from Supabase`);
+      console.log(
+        `📊 Loaded ${this.submissions.length} submissions from Supabase`,
+      );
     }
-    
+
     this.notifyListeners();
   }
 
   private setupRealtimeSubscription() {
     console.log("🔌 Setting up real-time subscriptions...");
-    
+
     this.realtimeChannel = supabase
-      .channel('submissions_channel')
+      .channel("submissions_channel")
       .on(
-        'postgres_changes',
-        { 
-          event: '*', 
-          schema: 'public', 
-          table: 'submissions' 
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "submissions",
         },
         (payload) => {
-          console.log('🔄 Real-time update received:', payload.eventType);
+          console.log("🔄 Real-time update received:", payload.eventType);
           this.handleRealtimeUpdate(payload);
-        }
+        },
       )
       .subscribe((status) => {
         console.log(`🔌 Real-time subscription status: ${status}`);
-        if (status === 'SUBSCRIBED') {
+        if (status === "SUBSCRIBED") {
           console.log("✅ Real-time updates ACTIVE!");
         }
       });
   }
 
   private handleRealtimeUpdate(payload: any) {
-    if (payload.eventType === 'INSERT') {
+    if (payload.eventType === "INSERT") {
       const newSubmission = payload.new as Submission;
       // Add if not already exists
-      const exists = this.submissions.find(s => s.id === newSubmission.id);
+      const exists = this.submissions.find((s) => s.id === newSubmission.id);
       if (!exists) {
         this.submissions = [newSubmission, ...this.submissions];
-        this.submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp);
+        this.submissions.sort(
+          (a, b) => b.level - a.level || a.timestamp - b.timestamp,
+        );
         console.log("🔄 New submission added via real-time");
         this.notifyListeners();
       }
-    } else if (payload.eventType === 'DELETE') {
-      this.submissions = this.submissions.filter(s => s.id !== payload.old.id);
+    } else if (payload.eventType === "DELETE") {
+      this.submissions = this.submissions.filter(
+        (s) => s.id !== payload.old.id,
+      );
       console.log("🗑️ Submission deleted via real-time");
       this.notifyListeners();
     }
@@ -154,7 +165,9 @@ class SupabaseDataStore {
       throw new Error("Database not initialized. Cannot save submission.");
     }
 
-    console.log(`📝 Saving to Supabase: ${submission.teamName} - Level ${submission.level}`);
+    console.log(
+      `📝 Saving to Supabase: ${submission.teamName} - Level ${submission.level}`,
+    );
 
     // Check for duplicates locally first
     const existingSubmission = this.submissions.find(
@@ -171,7 +184,7 @@ class SupabaseDataStore {
 
     try {
       const { data, error } = await supabase
-        .from('submissions')
+        .from("submissions")
         .insert(submission)
         .select()
         .single();
@@ -182,13 +195,17 @@ class SupabaseDataStore {
       }
 
       // Update local state immediately (real-time will also update it)
-      this.submissions = [data, ...this.submissions.filter(s => s.id !== data.id)];
-      this.submissions.sort((a, b) => b.level - a.level || a.timestamp - b.timestamp);
+      this.submissions = [
+        data,
+        ...this.submissions.filter((s) => s.id !== data.id),
+      ];
+      this.submissions.sort(
+        (a, b) => b.level - a.level || a.timestamp - b.timestamp,
+      );
       this.notifyListeners();
 
       console.log("✅ Submission saved to Supabase successfully");
       console.log("🌐 Broadcasting to all connected devices via real-time");
-
     } catch (error) {
       console.error("❌ Supabase save failed:", error);
       throw error;
@@ -264,9 +281,9 @@ class SupabaseDataStore {
 
     try {
       const { error } = await supabase
-        .from('submissions')
+        .from("submissions")
         .delete()
-        .neq('id', ''); // Delete all records
+        .neq("id", ""); // Delete all records
 
       if (error) {
         throw new Error(`Failed to clear data: ${error.message}`);
@@ -277,7 +294,6 @@ class SupabaseDataStore {
 
       console.log("✅ All data cleared from Supabase");
       console.log("🌐 Clear operation broadcast to all devices");
-
     } catch (error) {
       console.error("❌ Failed to clear Supabase data:", error);
       throw error;
@@ -293,7 +309,7 @@ class SupabaseDataStore {
         source: "supabase-realtime-database",
         totalSubmissions: this.submissions.length,
         connectionStatus: this.isConnected ? "connected" : "disconnected",
-        supabaseUrl: supabaseUrl
+        supabaseUrl: supabaseUrl,
       },
       null,
       2,
@@ -311,15 +327,15 @@ class SupabaseDataStore {
     await this.loadSubmissions();
   }
 
-  getStatus(): { 
-    initialized: boolean; 
-    submissionCount: number; 
+  getStatus(): {
+    initialized: boolean;
+    submissionCount: number;
     retryAttempts: number;
     databaseConnected: boolean;
     message: string;
   } {
     let message = "";
-    
+
     if (!this.isInitialized) {
       message = "🚀 Connecting to Supabase database...";
     } else if (!this.isConnected) {
@@ -339,12 +355,12 @@ class SupabaseDataStore {
 
   destroy(): void {
     console.log("🧹 Cleaning up Supabase connections");
-    
+
     if (this.realtimeChannel) {
       supabase.removeChannel(this.realtimeChannel);
       this.realtimeChannel = null;
     }
-    
+
     this.listeners.clear();
     console.log("✅ Supabase cleanup complete");
   }
@@ -358,7 +374,7 @@ if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", () => {
     supabaseDataStore.destroy();
   });
-  
+
   console.log("🔥 Supabase Realtime Database ready for high-stakes event");
   console.log("📊 Connected to YOUR database • Scales to hundreds of teams");
 }

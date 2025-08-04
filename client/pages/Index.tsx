@@ -423,8 +423,8 @@ export default function Index() {
                   )}
                   {!dbStatus.databaseConnected && (
                     <p className="text-xs text-cyber-red/60 matrix-text">
-                      🚨 Check internet connection - Supabase database
-                      required for event!
+                      🚨 Check internet connection - Supabase database required
+                      for event!
                     </p>
                   )}
                 </div>
