@@ -92,7 +92,7 @@ export default function Admin() {
   };
 
   const exportData = () => {
-    const data = postgresDataStore.exportData();
+    const data = supabaseDataStore.exportData();
     const blob = new Blob([data], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -110,7 +110,7 @@ export default function Admin() {
         "Are you sure you want to clear all data? This cannot be undone!",
       )
     ) {
-      await postgresDataStore.clearAllData();
+      await supabaseDataStore.clearAllData();
     }
   };
 
@@ -118,12 +118,12 @@ export default function Admin() {
     setResetError("");
 
     if (resetPassword.trim() === "GDG-IET") {
-      await postgresDataStore.clearAllData();
+      await supabaseDataStore.clearAllData();
       setResetPassword("");
       setIsResetDialogOpen(false);
       // Show success message
       alert(
-        "🔥 All data has been securely wiped! PostgreSQL database reset complete.",
+        "🔥 All data has been securely wiped! Supabase database reset complete.",
       );
     } else {
       setResetError("Incorrect password. Access denied.");
