@@ -59,16 +59,16 @@ export default function Admin() {
   const { isInitialized } = useRealtimeStore();
 
   const refreshData = () => {
-    setSubmissions(postgresDataStore.getSubmissions());
-    setLeaderboard(postgresDataStore.getLeaderboard());
+    setSubmissions(supabaseDataStore.getSubmissions());
+    setLeaderboard(supabaseDataStore.getLeaderboard());
     setLastUpdate(new Date());
   };
 
   useEffect(() => {
     refreshData();
 
-    // Set up real-time updates from PostgreSQL
-    const unsubscribe = postgresDataStore.subscribe(refreshData);
+    // Set up real-time updates from Supabase
+    const unsubscribe = supabaseDataStore.subscribe(refreshData);
 
     // Auto-refresh every 5 seconds
     const interval = setInterval(refreshData, 5000);
