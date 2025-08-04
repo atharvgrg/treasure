@@ -55,10 +55,10 @@ export default function Index() {
   const navigate = useNavigate();
   const { isInitialized } = useRealtimeStore();
 
-  // Monitor PostgreSQL database status
+  // Monitor Supabase database status
   useEffect(() => {
     const updateStatus = () => {
-      setDbStatus(postgresDataStore.getStatus());
+      setDbStatus(supabaseDataStore.getStatus());
     };
 
     // Initial check
